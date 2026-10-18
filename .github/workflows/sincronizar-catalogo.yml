@@ -46,14 +46,25 @@ jobs:
       - name: Instalar dependencias
         run: npm ci --no-audit --no-fund
 
-      - name: Descargar la hoja publicada como CSV
+      - name: Comprobar que la hoja está configurada
+        id: conf
         env:
           SHEET_CSV_URL: ${{ secrets.SHEET_CSV_URL }}
         run: |
           if [ -z "$SHEET_CSV_URL" ]; then
-            echo "::error::Falta el secreto SHEET_CSV_URL. Añádelo en Settings → Secrets and variables → Actions."
-            exit 1
+            echo "lista=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Todavía no hay secreto SHEET_CSV_URL: la web se publica con productos.csv del repositorio. Cuando publiques la hoja de Google, añade el secreto en Settings → Secrets and variables → Actions."
+            echo "## Sin hoja configurada" >> "$GITHUB_STEP_SUMMARY"
+            echo "No hay secreto SHEET_CSV_URL; no hay nada que sincronizar. La web usa productos.csv del repositorio." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "lista=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Descargar la hoja publicada como CSV
+        if: steps.conf.outputs.lista == 'true'
+        env:
+          SHEET_CSV_URL: ${{ secrets.SHEET_CSV_URL }}
+        run: |
           curl --fail --silent --show-error --location --retry 3 --retry-delay 10 --max-time 60 "$SHEET_CSV_URL" -o /tmp/hoja.csv
           node -e "
             const fs = require('fs');
@@ -64,9 +75,11 @@ jobs:
           echo "Hoja descargada: $(wc -l < /tmp/hoja.csv) líneas."
 
       - name: Validar la hoja (filas con errores se avisan; sin productos válidos se detiene)
+        if: steps.conf.outputs.lista == 'true'
         run: node scripts/validar.mjs /tmp/hoja.csv
 
       - name: Comprobar si la hoja cambió
+        if: steps.conf.outputs.lista == 'true'
         id: cambios
         run: |
           if cmp -s /tmp/hoja.csv /tmp/actual.csv; then
@@ -78,7 +91,7 @@ jobs:
           fi
 
       - name: Guardar productos.csv y publicar (Cloudflare Pages compila al recibir el push)
-        if: steps.cambios.outputs.cambio == 'true'
+        if: steps.conf.outputs.lista == 'true' && steps.cambios.outputs.cambio == 'true'
         run: |
           cp /tmp/hoja.csv productos.csv
           git config user.name "catalogo-bot"
@@ -90,7 +103,7 @@ jobs:
           echo "Se subió un nuevo productos.csv; Cloudflare Pages publicará la web en unos minutos." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publicar al momento aunque la hoja no cambiara (solo botón manual)
-        if: github.event_name == 'workflow_dispatch' && steps.cambios.outputs.cambio == 'false' && inputs.publicar
+        if: github.event_name == 'workflow_dispatch' && inputs.publicar && steps.cambios.outputs.cambio != 'true'
         env:
           CF_DEPLOY_HOOK_URL: ${{ secrets.CF_DEPLOY_HOOK_URL }}
         run: |
