@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Catálogo web de WIL Fragance: perfumes de diseñador y árabes en República Dominicana, con pedido por WhatsApp.",
   "scripts": {
-    "dev": "node scripts/catalogo.mjs && node scripts/preparar-fotos.mjs && astro dev",
+    "dev": "node scripts/catalogo.mjs && node scripts/preparar-fotos.mjs && astro dev --host",
     "build": "node scripts/catalogo.mjs && node scripts/preparar-fotos.mjs && astro build",
     "preview": "astro preview",
     "catalogo": "node scripts/catalogo.mjs",

@@ -298,7 +298,7 @@ La densidad cambia con el modo de cada página. La portada persuade: aire genero
 - Montserrat única en dos voces: Bold apretada (700, −0.02em) y Regular en mayúsculas con 0.3em; pesos 400, 600 y 700 nada más.
 - Toda foto de producto vive dentro de un arco blanco (999px 999px 0 0, proporción 1/1.18) en los dos temas.
 - Plano: filetes de 1 px, sin sombras en reposo, sin degradados, sin esquinas redondeadas fuera del arco, la píldora y el círculo.
-- Movimiento contenido: una sola curva (`ease-salida`), 200–600 ms, un carrusel que descansa a los 5 s y la foto que viaja de la tarjeta a la ficha.
+- Movimiento contenido: una sola curva (`ease-salida`), 200–600 ms, un carrusel que avanza cada 4,5 s y se puede pausar, y la foto que viaja de la tarjeta a la ficha.
 
 ## Colors
 
@@ -346,8 +346,8 @@ Mecánica: un script en línea en `<head>` lee `localStorage["wil.tema"]` (o la 
 | negro sobre oro | 12.5:1 | `btn-oro`, FAB de WhatsApp, globo del carrito, selección de texto |
 | blanco sobre negro | 21:1 | titulares y botones sobre la fachada |
 | blanco al 75 % / 70 % sobre negro | 11.4:1 / 10:1 | párrafos del banner, del pie y del cierre; flechas del carrusel |
-| blanco al 55 % / 50 % sobre negro | 6.3:1 / 5.3:1 | legal del pie (12 px) y "114 perfumes · 27 marcas" (14 px) |
-| blanco al 40 % / 28 % sobre negro | 3.7:1 / 2.3:1 | solo decorativo: punto "·" del pie de foto y puntos inactivos del carrusel |
+| blanco al 55 % / 50 % sobre negro | 6.3:1 / 5.3:1 | legal del pie (12 px), puntos inactivos del carrusel y "114 perfumes · 27 marcas" (14 px) |
+| blanco al 40 % sobre negro | 3.7:1 | solo decorativo: punto "·" del pie de foto |
 | oro oscuro sobre blanco / marfil | 5.4:1 / 5.0:1 | `acento` claro: etiquetas, marcas y enlaces (AA a 11 px porque es mayúscula espaciada; no bajes de ahí) |
 | humo sobre blanco / marfil | 4.9:1 / 4.65:1 | `texto-suave` claro; sobre marfil queda justo: mínimo 12 px |
 | carbón sobre blanco / marfil | 16.3:1 / 15.3:1 | cuerpo claro |
@@ -413,7 +413,7 @@ Contenedor de 1280 px (`max-w-7xl`) centrado con márgenes de 16 px en móvil y 
 
 **Rejilla de productos.** 2 columnas en móvil, 4 desde 768 px en la portada; en el catálogo 2 → 3 (768 px) → 4 (1024 px). Hueco de 12 px en móvil y 20 px en escritorio. La imagen declara `sizes="(min-width: 1024px) 23vw, (min-width: 640px) 31vw, 46vw"`.
 
-**Banner de portada.** Dos columnas desde 768 px (`md:grid-cols-2`, centradas verticalmente, hueco 32 / 48 px, padding 28 → 56 px arriba y 48 → 80 px abajo). En móvil el portal va primero y el texto debajo (`order-1` / `order-2`). El portal es una rejilla `[auto_1fr_auto]` alineada por la base, ancho máximo 384 px (448 px desde 768 px), hueco 12 / 20 px: columna + arco + columna, con las columnas al 60 % de la altura del arco. Dentro del arco, la pista del carrusel con los destacados; debajo, el pie de foto centrado de 14 px (nombre Bold blanco, marca en etiqueta oro, "·" al 40 % y precio) y, si hay más de una diapositiva, flechas de 44 px con los puntos entre ellas (12 px debajo del pie de foto).
+**Banner de portada.** Dos columnas desde 768 px (`md:grid-cols-2`, centradas verticalmente, hueco 32 / 48 px, padding 28 → 56 px arriba y 48 → 80 px abajo). En móvil el portal va primero y el texto debajo (`order-1` / `order-2`). El portal es una rejilla `[auto_1fr_auto]` alineada por la base, ancho máximo 384 px (448 px desde 768 px), hueco 12 / 20 px: columna + arco + columna, con las columnas al 60 % de la altura del arco. Dentro del arco, la pista del carrusel con los destacados; debajo, el pie de foto centrado de 14 px (nombre Bold blanco, marca en etiqueta oro, "·" al 40 % y precio) y, si hay más de una diapositiva, flechas de 44 px con los puntos entre ellas (objetivos de 44 × 32 px) y el botón de pausa, 12 px debajo del pie de foto.
 
 **Ficha.** Foto y texto en dos columnas desde 768 px (hueco 32 → 56 px); la columna de la foto se limita a 448 px en móvil. Los bloques de la columna de texto se apilan a 32 px con filete superior `linea` y 24 px de padding (`border-t pt-6`). Migas de pan de 12 px sobre el contenido (`pt-5`). "También te puede gustar" es una banda `fondo-suave` con la rejilla de 4.
 
@@ -423,7 +423,7 @@ Contenedor de 1280 px (`max-w-7xl`) centrado con márgenes de 16 px en móvil y 
 
 **Capas fijas.** Cabecera pegajosa de 60 px (`z-30`); botón flotante de WhatsApp a 16 px de la esquina inferior derecha (24 px desde 768 px, `z-40`); aviso del carrito centrado a 96 px del borde inferior en móvil (por encima del FAB) y a 32 px en escritorio (`z-50`); enlace "Saltar al contenido" en `z-50` al recibir foco. El menú móvil es un `<dialog>` a pantalla completa con telón `negro/70`.
 
-**Tacto.** Objetivos de 44 px para los iconos de cabecera, las flechas del carrusel, el selector de cantidad del carrito y "Quitar"; 48 px de altura mínima para botones, campos y el selector de la ficha; chips de 40 px; FAB de 56 px.
+**Tacto.** Objetivos de 44 px para los iconos de cabecera, las flechas, los puntos y la pausa del carrusel, el selector de cantidad del carrito y "Quitar"; 48 px de altura mínima para botones, campos y el selector de la ficha; chips de 40 px; FAB de 56 px.
 
 **Imágenes.** Cada perfume existe en 400 / 800 / 1200 px WebP (`/img/perfumes/{slug}-{tamaño}.webp`) con `srcset`, más un JPG 1200 × 630 para Open Graph (`/img/og/{slug}.jpg`). Tarjetas a 400, carrusel y ficha a 800 con `fetchpriority="high"` en la primera; las cuatro primeras tarjetas del catálogo cargan `eager`.
 
@@ -450,14 +450,14 @@ Sistema plano en los dos temas. Las superficies no tienen sombra en reposo ni al
 Lenguaje de formas rectas con tres excepciones geométricas tomadas del logo y de los controles táctiles:
 
 - **Rectángulo sin radio (0)** para todo lo que se apoya: botones, campos, tarjetas, paneles, insignia, aviso, selector de cantidad, cabecera. Los bordes son filetes de 1 px (`linea` / `grafito`), salvo el campo, cuyo filete es `texto-suave`.
-- **Arco** (`999px 999px 0 0`): la ventana de vitrina de cada foto y la silueta de las columnas. El `.arco` es un marco blanco (en los dos temas) de proporción 1 / 1.18 con filete `linea`, alineación inferior y recorte (`overflow: hidden`); la foto mide el 78 % del ancho, `object-fit: contain`, y se posa a un 7 % del borde inferior. Tarjetas, ficha y vitrinas de categoría llevan el filete; `.arco--limpio` lo quita solo cuando el arco se apoya sobre la fachada negra (banner) o es una miniatura (líneas del carrito, 76 → 92 px). Un perfume agotado baja el arco al 60 % de opacidad.
+- **Arco** (`999px 999px 0 0`): la ventana de vitrina de cada foto y la silueta de las columnas. El `.arco` es un marco blanco (en los dos temas) de proporción 1 / 1.18 con filete `linea`, alineación inferior y recorte (`overflow: hidden`); la foto mide el 78 % del ancho, `object-fit: contain`, y se posa a un 7 % del borde inferior. Tarjetas, ficha, vitrinas de categoría y miniaturas del carrito (76 → 92 px) llevan el filete; `.arco--limpio` lo quita solo cuando el arco se apoya sobre la fachada negra (banner). Un perfume agotado baja el arco al 60 % de opacidad.
 - **Píldora** (`999px`): chips de filtro y de marca.
 - **Círculo** (`rounded-full`): botón flotante de WhatsApp (56 px), globo de cantidad del carrito (18 px) y puntos del carrusel (8 px).
 - **Columna** (`.columna`): 44 × 140 px (56 px de ancho desde 768 px), trazo de 2 px en oro con remate en arco y sin borde inferior; dentro, una barra dorada al 26 % del ancho que nace a 13 px del remate (`--hueco`, 18 px en escritorio) y llega al suelo. En la portada mide el 60 % de la altura del arco.
 - **Chevrón doble** (`Chevron.astro`): el trazado exacto del vector del logo, en oro por defecto (también negro o blanco), proporción 1 : 0.595. Ancho 30 px como separador y en estados vacíos, 34 px en el 404, 26 px en "Sobre nosotros", 18 px como viñeta de lista, 16 px junto a un `dt`.
 
 ### Named Rules
-**La regla del arco.** Toda foto de producto vive en un arco blanco con filete `linea`; nunca una foto suelta, recortada (`cover`) ni a sangre. `--limpio` solo sobre la fachada negra y en miniaturas. La única imagen fuera del arco es la marca gráfica.
+**La regla del arco.** Toda foto de producto vive en un arco blanco con filete `linea`; nunca una foto suelta, recortada (`cover`) ni a sangre. `--limpio` solo sobre la fachada negra. La única imagen fuera del arco es la marca gráfica.
 
 **La regla del portal.** El par de columnas y el carrusel aparecen una sola vez en el sitio: en el banner de portada. No se repiten en fichas, tarjetas ni pies.
 
@@ -503,7 +503,7 @@ En la ficha, `inline-grid` de 48 px de alto con columnas `[48px_56px_48px]` y fi
 - **Agotado:** `.insignia` arriba a la izquierda (12 px / 12 px), arco al 60 %, botón de borde, sin botón de añadir. Lleva `data-*` (género, tipo, marca, precio, búsqueda) para los filtros en cliente.
 
 ### Carrusel del portal
-Solo en el banner de portada: dentro del `.arco--limpio` del portal, una `ul.pista` con `scroll-snap-type: x mandatory`, una diapositiva por destacado (hasta 8) a todo el ancho, deslizable con el dedo sin JavaScript. `carrusel.ts` añade el autoavance cada 5000 ms, las flechas (`izquierda` / `derecha`, cajas de 44 px, blanco 70 % con hover oro), los puntos (`.punto`: círculos de 8 px, blanco al 28 %; el actual en oro y escalado 1.3, 300 ms) y actualiza la leyenda (nombre, marca, precio y enlace, `aria-live="polite"`) con un `IntersectionObserver` al 60 %. Se detiene al entrar el puntero, al enfocar, al tocar y con la pestaña oculta; no arranca con `prefers-reduced-motion`, donde además el desplazamiento es instantáneo. Las diapositivas del banner no llevan `transition:name`.
+Solo en el banner de portada: dentro del `.arco--limpio` del portal, una `ul.pista` con `scroll-snap-type: x mandatory`, una diapositiva por destacado (hasta 8) a todo el ancho, deslizable con el dedo sin JavaScript; la primera imagen carga `eager`, `fetchpriority="high"` y `decoding="sync"`, el resto `lazy`. `carrusel.ts` añade el autoavance cada 4500 ms, las flechas (`izquierda` / `derecha`, cajas de 44 px, blanco 70 % con hover oro), los puntos (`.punto`: círculos de 8 px, blanco al 55 %, el actual en oro y escalado 1.3 en 300 ms, dentro de botones de 44 × 32 px), el botón de pausa (44 px, `aria-pressed`, icono `pausa` o `reproducir` de 18 px según el estado, "Pausar el carrusel" / "Reanudar el carrusel") y actualiza la leyenda (nombre, marca, precio y enlace) con un `IntersectionObserver` al 60 %; la leyenda lleva `aria-live="off"` mientras rota sola y `polite` cuando el visitante la maneja. Se detiene mientras se toca o arrastra la pista, mientras algo del carrusel tiene el foco, con la pestaña oculta y cuando el visitante lo pausa; con `prefers-reduced-motion` sigue avanzando pero salta sin deslizar. Las diapositivas del banner no llevan `transition:name`.
 
 ### Insignia (`.insignia`)
 Rectángulo negro con texto oro de 10 px, Regular, 0.26em, mayúsculas, padding `7px 10px 6px`, posicionado a 12 px de la esquina superior izquierda del arco en `z-index: 2`. Solo existe el texto "Agotado".
@@ -518,7 +518,7 @@ Regular, mayúsculas, 0.3em, 11 px, interlineado 1.5. Colores: `acento` bajo tí
 `Chevron.astro` dibuja el chevrón doble del logo (oro por defecto). `.separador` lo centra entre dos filetes de 1 px (`linea`; `--oscuro` usa `grafito` sobre negro) con hueco de 1.1rem: encabeza el pie y la banda de cierre a 30 px y separa la presentación de "Sobre nosotros" a 26 px. Solo, centrado a 30–34 px, abre los estados vacíos del catálogo, del carrito y el 404. A 18 px es la viñeta de la lista de garantías de "Así de fácil" y a 16 px acompaña al `dt` "Pago" en contacto.
 
 ### Iconos (`Icono.astro`)
-Diecisiete iconos dibujados a mano en rejilla de 24, trazo de 1.6 px con remates redondos, `currentColor`, 22 px por defecto (16 / 18 / 20 / 28 / 32 según contexto), `aria-hidden`: buscar, bolsa, instagram, menú, cerrar, flecha, más, menos, papelera, check, ubicación, reloj, sol, luna, izquierda, derecha y WhatsApp. Solo el de WhatsApp es de relleno, y hereda el color del texto: negro en el FAB y en `btn-oro`, blanco en `btn-negro`, oro en la tarjeta negra de contacto, `acento` en enlaces de texto. Ninguna librería de iconos.
+Diecinueve iconos dibujados a mano en rejilla de 24, trazo de 1.6 px con remates redondos, `currentColor`, 22 px por defecto (16 / 18 / 20 / 28 / 32 según contexto), `aria-hidden`: buscar, bolsa, instagram, menú, cerrar, flecha, más, menos, papelera, check, ubicación, reloj, sol, luna, izquierda, derecha, pausa, reproducir y WhatsApp. Solo el de WhatsApp es de relleno, y hereda el color del texto: negro en el FAB y en `btn-oro`, blanco en `btn-negro`, oro en la tarjeta negra de contacto, `acento` en enlaces de texto. Ninguna librería de iconos.
 
 ### Navigation (`Header.astro`)
 - **Barra:** pegajosa, 60 px, negra con filete inferior `grafito`, contenedor de 1280 px; fija en los dos temas. Izquierda: isotipo blanco 36 × 37 + lockup "WIL / FRAGANCE". Centro (desde 1024 px): cinco etiquetas (Catálogo, Hombre, Mujer, Árabes, Diseñador) al 90 % de blanco, hueco 28 px, hover a oro, `aria-current="page"` solo en el enlace sin parámetros. Derecha: iconos de buscar, bolsa, tema y menú en cajas de 44 px, hover a oro.
@@ -547,7 +547,7 @@ Lista `divide-y` con filetes `linea` arriba y abajo en un contenedor de 672 px; 
 Dentro del contenido: `acento` subrayado con `underline-offset` de 4 px (3 px dentro de `.prosa`), hover a `tinta`. Acciones terciarias ("Quitar", "Vaciar el carrito", "limpia los filtros"): 12–14 px en `texto-suave`, subrayadas si son texto, hover a `tinta`; con icono de 16 px si aplica. Sobre la fachada: enlaces de 14 px en blanco con hover a oro.
 
 ### Movimiento
-Una sola curva, `--ease-salida: cubic-bezier(0.16, 1, 0.3, 1)`, para todo lo que se desplaza o escala; los cambios de color, fondo y borde usan la curva por defecto a 200 ms. Duraciones: 200 ms (color de botones, chips, enlaces), 250 ms (`translateY(1px)` del botón activo), 300 ms (filete de tarjeta, FAB, aviso, giro del icono de FAQ, puntos del carrusel, cambio de tema en `body`), 600 ms (ascenso de la foto en el arco, solo con `hover: hover`), 5000 ms (intervalo del carrusel). La única animación entre páginas es la foto del producto: `transition:name="foto-{slug}"` en tarjeta y ficha hace que el frasco viaje de la vitrina a la ficha con el `ClientRouter` de Astro; la cabecera persiste sin animar y el resto de la página usa la transición por defecto. Con `prefers-reduced-motion: reduce` todas las transiciones y animaciones bajan a 0.01 ms, `scroll-behavior` vuelve a `auto`, el carrusel no avanza solo ni desliza suave y el `ClientRouter` desactiva sus animaciones. Estado "Añadido": el botón negro cambia su texto y adopta `btn-oro` durante 1400 ms mientras el aviso aparece.
+Una sola curva, `--ease-salida: cubic-bezier(0.16, 1, 0.3, 1)`, para todo lo que se desplaza o escala; los cambios de color, fondo y borde usan la curva por defecto a 200 ms. Duraciones: 200 ms (color de botones, chips, enlaces), 250 ms (`translateY(1px)` del botón activo), 300 ms (filete de tarjeta, FAB, aviso, giro del icono de FAQ, puntos del carrusel, cambio de tema en `body`), 600 ms (ascenso de la foto en el arco, solo con `hover: hover`), 4500 ms (intervalo del carrusel). La única animación entre páginas es la foto del producto: `transition:name="foto-{slug}"` en tarjeta y ficha hace que el frasco viaje de la vitrina a la ficha con el `ClientRouter` de Astro; la cabecera persiste sin animar y el resto de la página usa la transición por defecto. Con `prefers-reduced-motion: reduce` todas las transiciones y animaciones bajan a 0.01 ms, `scroll-behavior` vuelve a `auto`, el carrusel cambia de diapositiva sin deslizar (su botón de pausa lo detiene) y el `ClientRouter` desactiva sus animaciones. Estado "Añadido": el botón negro cambia su texto y adopta `btn-oro` durante 1400 ms mientras el aviso aparece.
 
 ### Superficies del navegador
 Selección de texto oro con texto negro en los dos temas; `:focus-visible` con `outline` de 2 px en `tinta` y 3 px de desplazamiento, oro dentro de `.bg-negro` y en el tema oscuro (los campos usan anillo de `box-shadow`); barra de scroll `piedra` sobre `fondo-suave`; `html` y `body` en `fondo`; `theme-color` #000000 en los dos temas; `color-scheme: light dark` con `data-tema` en `<html>`; `scroll-behavior: smooth`; enlace "Saltar al contenido" en oro con texto negro al recibir foco; `html lang="es-DO"`.
@@ -567,12 +567,12 @@ Selección de texto oro con texto negro en los dos temas; `:focus-visible` con `
 - **Do** construir el contenido con los tokens semánticos (`bg-fondo`, `bg-fondo-suave`, `border-linea`, `text-tinta`, `text-texto`, `text-texto-suave`, `text-acento`) para que gire con el tema, y reservar los fijos (`bg-negro`, `text-blanco`, `text-oro`, `border-grafito`) para la fachada.
 - **Do** escribir el texto secundario en `text-texto-suave` a 12 px o más (14 px cuando va sobre `bg-fondo-suave`) y el cuerpo en `text-texto`.
 - **Do** separar con filetes de 1 px en `border-linea` (`arena` en claro, `grafito` en oscuro) y con `border-grafito` sobre la fachada negra.
-- **Do** meter cada foto de producto en un `.arco` blanco en los dos temas (1/1.18, foto al 78 % apoyada abajo), con su filete `linea`; `--limpio` solo cuando el arco se apoya sobre negro o es una miniatura.
+- **Do** meter cada foto de producto en un `.arco` blanco en los dos temas (1/1.18, foto al 78 % apoyada abajo), con su filete `linea`; `--limpio` solo cuando el arco se apoya sobre la fachada negra.
 - **Do** componer cada sección como título Bold y, si hace falta subtítulo, una etiqueta Regular en mayúsculas 8 px debajo; la rejilla a 28 px.
 - **Do** usar `btn-negro` como acción por defecto dentro del contenido y `btn-oro` solo para la acción que abre WhatsApp o lleva al catálogo desde el banner.
 - **Do** escribir precios como `RD$10,800` con el prefijo en `<small>` dentro de los componentes y `tabular-nums` cuando se alinean en columna.
 - **Do** alternar bandas `bg-fondo` y `bg-fondo-suave` y reservar el negro fijo para cabecera, banner, pie y cierre.
-- **Do** mantener objetivos táctiles de 44 px y controles de 48 px, y respetar `prefers-reduced-motion` (sin autoavance ni desplazamiento suave en el carrusel).
+- **Do** mantener objetivos táctiles de 44 px y controles de 48 px, y respetar `prefers-reduced-motion` (el carrusel cambia sin deslizar y tiene botón de pausa).
 - **Do** usar `ease-salida` y las duraciones de 200–600 ms ya definidas; la única animación entre páginas es la foto de la tarjeta a la ficha.
 - **Do** marcar "Agotado" con la insignia negra y oro (10 px), el arco al 60 % y el botón de borde "Avísame".
 

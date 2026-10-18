@@ -38,7 +38,8 @@ Perfumería en RD que junta originales de diseñador y perfumes árabes en un so
 - SEO: título y descripción por perfume, Open Graph por perfume, sitemap, robots.txt, datos estructurados Product con precio en DOP y disponibilidad.
 - Validación de datos en compilación: precio numérico, stock válido, imagen existente; una fila con error se omite y se avisa, sin tumbar la web.
 - Terminología fija: "perfume", "árabes", "diseñador", "Agotado", "Pedir por WhatsApp", "Avísame cuando llegue", "Similar a".
-- Pendientes del usuario (no inventar): número de WhatsApp, cuenta de Instagram, ciudad/zona, métodos de pago, dominio.
+- Datos confirmados: WhatsApp 18498162401; entrega en Santo Domingo Norte; sin tienda física por ahora, venta por pedido.
+- Pendientes del usuario (no inventar): cuenta de Instagram, métodos de pago, horario, dominio.
 - Entorno de desarrollo: Windows 11; Node.js ya está instalado en `C:\Program Files\nodejs`.
 
 ## Brand Commitments
@@ -46,6 +47,8 @@ Perfumería en RD que junta originales de diseñador y perfumes árabes en un so
 - Nombre: WIL Fragance (se respeta la grafía "Fragance" del logo).
 - Logo vectorial (`materiales/Logo WIL.pdf`, derivados en `materiales/logo/`): frasco negro entre dos columnas con remate en arco, doble chevrón "W" dorado debajo; "WIL" en Montserrat Bold y "FRAGANCE" en Montserrat Regular, mayúsculas con tracking amplio.
 - Colores: dorado #E6C643, negro #000000 y blanco #FFFFFF. Solo tonos derivados de estos (un dorado más oscuro para texto sobre blanco, grises cálidos). Ningún color nuevo.
+- Tema oscuro (pedido por el usuario el 17-10-2026): negros cálidos derivados (#0F0E0C, #161512, #1B1A16) para el contenido; la fachada negra y el arco blanco de las fotos no cambian; botón luna/sol en la cabecera.
+- Banner de portada: carrusel de los perfumes marcados como `destacado`, con avance automático (pedido por el usuario), botón de pausa, flechas y puntos.
 - Tipografía: Montserrat exclusivamente. Bold para títulos; Regular en mayúsculas con mucho espaciado entre letras para subtítulos y etiquetas.
 - Motivo: los arcos y columnas del logo como recurso decorativo sutil.
 - Tono: perfumería de lujo, elegante y limpia, fácil de comprar desde el móvil; nada de diseño de plantilla.

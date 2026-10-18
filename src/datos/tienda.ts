@@ -16,7 +16,10 @@ export const tienda = {
   instagram: '@tu_cuenta',
 
   /** Ciudad o zona de entrega */
-  ubicacion: '[Ciudad / zona]',
+  ubicacion: 'Santo Domingo Norte',
+
+  /** ¿Hay tienda física? Por ahora no: se vende por pedido, con entrega. */
+  tiendaFisica: false,
 
   /** Métodos de pago que aceptas, p. ej. ['Transferencia', 'Efectivo'] */
   pagos: ['[Métodos de pago]'],

@@ -33,8 +33,11 @@ const whatsappVisible = whatsappConfigurado
 
     <dl class="mt-10 grid gap-6 border-t border-linea pt-8 sm:grid-cols-3">
       <div>
-        <dt class="etiqueta flex items-center gap-2 text-acento"><Icono nombre="ubicacion" tamano={16} /> Dónde estamos</dt>
-        <dd class="mt-2 text-[15px]">{tienda.ubicacion}</dd>
+        <dt class="etiqueta flex items-center gap-2 text-acento"><Icono nombre="ubicacion" tamano={16} /> {tienda.tiendaFisica ? 'Dónde estamos' : 'Dónde entregamos'}</dt>
+        <dd class="mt-2 text-[15px]">
+          {tienda.ubicacion}
+          {!tienda.tiendaFisica && <span class="mt-1 block text-sm text-texto-suave">Venta por pedido, sin tienda física por ahora.</span>}
+        </dd>
       </div>
       <div>
         <dt class="etiqueta flex items-center gap-2 text-acento"><Icono nombre="reloj" tamano={16} /> Horario</dt>

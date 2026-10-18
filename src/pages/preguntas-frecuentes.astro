@@ -36,7 +36,9 @@ const preguntas = [
   },
   {
     p: '¿Tienen tienda física?',
-    r: `[Pendiente: dirección y horario si hay tienda física, o aclarar que la venta es por WhatsApp con entrega.]${horarioConfigurado ? ` Horario de atención: ${tienda.horario}.` : ''}`,
+    r: tienda.tiendaFisica
+      ? `[Pendiente: dirección y horario de la tienda.]${horarioConfigurado ? ` Horario de atención: ${tienda.horario}.` : ''}`
+      : `Por ahora no. Vendemos por pedido: eliges en la web, confirmas por WhatsApp y te lo entregamos en ${tienda.ubicacion}.${horarioConfigurado ? ` Atendemos ${tienda.horario}.` : ''}`,
   },
 ];
 
