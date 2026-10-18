@@ -6,17 +6,19 @@ Resumen del flujo: el código vive en un repositorio de GitHub; Cloudflare Pages
 
 1. Crea una cuenta en <https://github.com> si no la tienes.
 2. Pulsa **New repository**. Nombre: `wil-fragance`. Visibilidad: **Public** o **Private** (ambas funcionan; con Private, GitHub da 2,000 minutos de Actions al mes, y la sincronización horaria usa unos 750). No marques "Add a README".
-3. En tu computadora, abre una terminal en la carpeta del proyecto. El repositorio local ya existe con un primer commit; solo hay que conectarlo y subirlo (cambia `TU-USUARIO`):
+3. Hecho el 17-10-2026: el repositorio local ya está conectado a <https://github.com/Angel-Rojas-ING/Web-Perfumes> y el código subido. Para subir cambios futuros desde la carpeta del proyecto:
 
 ```bash
-git remote add origin https://github.com/TU-USUARIO/wil-fragance.git
+git add -A
 ```
 
 ```bash
-git push -u origin main
+git commit -m "Describe el cambio"
 ```
 
-La primera vez, Git te pedirá iniciar sesión en GitHub en el navegador.
+```bash
+git push
+```
 
 4. Añade los secretos de la Action: en GitHub, **Settings → Secrets and variables → Actions → New repository secret**:
    - `SHEET_CSV_URL`: la URL de la hoja publicada como CSV (guía 2, paso A.5).
@@ -26,7 +28,7 @@ La primera vez, Git te pedirá iniciar sesión en GitHub en el navegador.
 
 1. Crea una cuenta en <https://dash.cloudflare.com/sign-up> (gratis).
 2. En el panel, entra en **Workers & Pages → Create → Pages → Connect to Git**.
-3. Autoriza la aplicación de Cloudflare en GitHub y elige el repositorio `wil-fragance`.
+3. Autoriza la aplicación de Cloudflare en GitHub y elige el repositorio `Web-Perfumes`. Como **Project name** escribe `wil-fragance` para que la dirección sea `wil-fragance.pages.dev` (si ya estuviera ocupado, elige otro y ajusta `SITE_URL`).
 4. Configuración de la compilación:
    - **Production branch**: `main`
    - **Framework preset**: Astro
