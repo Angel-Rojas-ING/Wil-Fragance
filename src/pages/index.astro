@@ -3,18 +3,19 @@ import Base from '../layouts/Base.astro';
 import TarjetaProducto from '../components/TarjetaProducto.astro';
 import Chevron from '../components/Chevron.astro';
 import Icono from '../components/Icono.astro';
-import { tienda, enlaceWhatsApp, mensajes, instagramUrl } from '../datos/tienda';
-import { destacados, productos, marcas, porSlug, rutaImagen, srcsetImagen, rutaPerfume, nombreCompleto, type Producto } from '../lib/catalogo';
-import { precio } from '../lib/formato';
+import { tienda, enlaceWhatsApp, mensajes, instagramUrl, instagramConfigurado, pagosConfigurados, textoPagos } from '../datos/tienda';
+import { destacados, productos, marcas, porSlug, rangoPrecios, rutaImagen, srcsetImagen, rutaPerfume, nombreCompleto, type Producto } from '../lib/catalogo';
+import { precio, separarMiles } from '../lib/formato';
 
-const dest = destacados(9);
-const estrella = dest[0] ?? productos[0];
-const destacadosGrid = dest.filter((p) => p.slug !== estrella.slug).slice(0, 8);
+const dest = destacados(8);
+const diapositivas = dest.length ? dest : productos.slice(0, 1);
+const estrella = diapositivas[0];
 
 const marcadasNovedad = productos.filter((p) => p.novedad);
 const numericos = productos.every((p) => /^\d+$/.test(p.id));
 const recientes = numericos ? [...productos].sort((a, b) => Number(b.id) - Number(a.id)) : [...productos].reverse();
 const novedadesGrid = (marcadasNovedad.length ? marcadasNovedad : recientes.filter((p) => !dest.some((d) => d.slug === p.slug))).slice(0, 8);
+const subtituloNovedades = marcadasNovedad.length ? 'Recién llegados' : 'Últimos añadidos al catálogo';
 
 const elegir = (slug: string, alternativa: (p: Producto) => boolean) => porSlug.get(slug) ?? productos.find(alternativa) ?? estrella;
 const categorias = [
@@ -31,6 +32,7 @@ const pasos = [
 ];
 
 const site = Astro.site ?? new URL('https://wil-fragance.pages.dev');
+const { min, max } = rangoPrecios();
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Store',
@@ -39,25 +41,28 @@ const jsonLd = {
   url: site.href,
   logo: new URL('/logo/logo-wil-800.png', site).href,
   image: new URL('/img/og-default.jpg', site).href,
-  sameAs: [instagramUrl],
-  paymentAccepted: tienda.pagos.join(', '),
-  priceRange: 'RD$2,750 - RD$14,000',
-  address: { '@type': 'PostalAddress', addressCountry: 'DO', addressLocality: tienda.ubicacion },
+  ...(instagramConfigurado ? { sameAs: [instagramUrl] } : {}),
+  ...(pagosConfigurados ? { paymentAccepted: tienda.pagos.join(', ') } : {}),
+  priceRange: `RD$${separarMiles(min)} - RD$${separarMiles(max)}`,
+  address: { '@type': 'PostalAddress', addressCountry: 'DO' },
 };
 ---
 
 <Base
   titulo="Perfumes de diseñador y árabes en República Dominicana"
-  descripcion={`${tienda.nombre}: ${productos.length} perfumes de diseñador y árabes con precios en pesos. Elige, arma tu carrito y pide por WhatsApp. Entrega en ${tienda.ubicacion}.`}
-  tituloCompleto={false}
+  descripcion={`${tienda.nombre}: ${productos.length} perfumes de diseñador y árabes con precios en pesos. Elige, arma tu carrito y pide por WhatsApp.`}
   jsonLd={jsonLd}
 >
-  <!-- Banner: la fachada con el portal -->
+  <!-- Banner: la fachada con el portal; el arco es un carrusel de los destacados -->
   <section class="bg-negro text-blanco">
     <div class="mx-auto grid max-w-7xl gap-8 px-4 pt-7 pb-12 md:grid-cols-2 md:items-center md:gap-12 md:px-6 md:pt-14 md:pb-20">
       <div class="order-2 md:order-1">
         <h1 class="text-[34px] leading-[1.04] text-blanco sm:text-4xl lg:text-[56px]">{tienda.lema}</h1>
-        <p class="etiqueta mt-4 text-oro">Entrega en {tienda.ubicacion} · Pedido por WhatsApp</p>
+        <p class="etiqueta mt-4 text-oro">
+          <span class="whitespace-nowrap">Entrega en {tienda.ubicacion}</span>
+          <span class="mx-1" aria-hidden="true">·</span>
+          <span class="whitespace-nowrap">Pedido por WhatsApp</span>
+        </p>
         <p class="mt-5 max-w-md text-[15px] text-blanco/75 md:text-base">
           Fragancias de las grandes casas y las árabes más buscadas, con precios claros en pesos. Elige, añade al carrito y confirma tu pedido por WhatsApp.
         </p>
@@ -69,34 +74,66 @@ const jsonLd = {
         </div>
         <p class="mt-8 text-sm text-blanco/50">{productos.length} perfumes · {marcas.length} marcas</p>
       </div>
-      <div class="order-1 md:order-2">
+
+      <div class="order-1 md:order-2" data-carrusel aria-roledescription="carrusel" aria-label="Perfumes destacados">
         <div class="mx-auto grid max-w-sm grid-cols-[auto_1fr_auto] items-end gap-3 md:max-w-md md:gap-5">
           <span class="columna h-[60%] md:w-14 md:[--hueco:18px]" aria-hidden="true"></span>
-          <a href={rutaPerfume(estrella)} class="block" aria-label={`Ver ${nombreCompleto(estrella)}`}>
-            <div class="arco arco--limpio">
-              <img
-                src={rutaImagen(estrella.imagen, 800)}
-                srcset={srcsetImagen(estrella.imagen)}
-                sizes="(min-width: 768px) 40vw, 80vw"
-                width="800"
-                height="800"
-                alt={nombreCompleto(estrella)}
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-                transition:name={`foto-${estrella.slug}`}
-              />
-            </div>
-          </a>
+          <div class="arco arco--limpio">
+            <ul class="pista" data-pista>
+              {diapositivas.map((p, i) => (
+                <li
+                  data-nombre={p.nombre}
+                  data-marca={p.marca}
+                  data-precio={precio(p.precio)}
+                  data-url={rutaPerfume(p)}
+                  aria-label={`${i + 1} de ${diapositivas.length}: ${nombreCompleto(p)}`}
+                >
+                  <a href={rutaPerfume(p)} aria-label={`Ver ${nombreCompleto(p)}`}>
+                    <img
+                      src={rutaImagen(p.imagen, 800)}
+                      srcset={srcsetImagen(p.imagen)}
+                      sizes="(min-width: 768px) 40vw, 80vw"
+                      width="800"
+                      height="800"
+                      alt={nombreCompleto(p)}
+                      loading={i === 0 ? 'eager' : 'lazy'}
+                      fetchpriority={i === 0 ? 'high' : 'auto'}
+                      decoding={i === 0 ? 'sync' : 'async'}
+                    />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
           <span class="columna h-[60%] md:w-14 md:[--hueco:18px]" aria-hidden="true"></span>
         </div>
-        <p class="mt-5 text-center text-sm text-blanco/80">
-          <a href={rutaPerfume(estrella)} class="hover:text-oro">
-            <span class="font-semibold text-blanco">{estrella.nombre}</span>
-            <span class="etiqueta ml-2 text-[10px] text-oro">{estrella.marca}</span>
+
+        <p class="mt-5 text-center text-sm text-blanco/80" aria-live="polite">
+          <a href={rutaPerfume(estrella)} class="hover:text-oro" data-leyenda-enlace>
+            <span class="font-bold text-blanco" data-leyenda-nombre>{estrella.nombre}</span>
+            <span class="etiqueta ml-2 text-[11px] text-oro" data-leyenda-marca>{estrella.marca}</span>
           </a>
-          <span class="mx-2 text-blanco/40">·</span>{precio(estrella.precio)}
+          <span class="mx-2 text-blanco/40" aria-hidden="true">·</span>
+          <span data-leyenda-precio>{precio(estrella.precio)}</span>
         </p>
+
+        {diapositivas.length > 1 && (
+          <div class="mt-3 flex items-center justify-center gap-3">
+            <button type="button" class="grid h-11 w-11 place-items-center text-blanco/70 transition-colors hover:text-oro" data-anterior aria-label="Anterior">
+              <Icono nombre="izquierda" />
+            </button>
+            <div class="flex items-center">
+              {diapositivas.map((p, i) => (
+                <button type="button" class="grid h-8 w-6 place-items-center" data-punto aria-label={`Ir a ${nombreCompleto(p)}`} aria-current={i === 0 ? 'true' : 'false'}>
+                  <span class="punto"></span>
+                </button>
+              ))}
+            </div>
+            <button type="button" class="grid h-11 w-11 place-items-center text-blanco/70 transition-colors hover:text-oro" data-siguiente aria-label="Siguiente">
+              <Icono nombre="derecha" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   </section>
@@ -104,7 +141,6 @@ const jsonLd = {
   <!-- Categorías: cuatro vitrinas -->
   <section class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
     <h2 class="text-2xl md:text-3xl">Explora</h2>
-    <p class="etiqueta mt-2 text-oro-oscuro">Cuatro vitrinas</p>
     <div class="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
       {categorias.map((c) => (
         <a href={c.href} class="group block text-center">
@@ -120,24 +156,24 @@ const jsonLd = {
               decoding="async"
             />
           </div>
-          <span class="etiqueta mt-3 block text-negro transition-colors group-hover:text-oro-oscuro">{c.titulo}</span>
+          <span class="etiqueta mt-3 block text-tinta transition-colors group-hover:text-acento">{c.titulo}</span>
         </a>
       ))}
     </div>
   </section>
 
   <!-- Destacados -->
-  <section class="bg-marfil">
+  <section class="bg-fondo-suave">
     <div class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
       <div class="flex items-end justify-between gap-4">
         <div>
           <h2 class="text-2xl md:text-3xl">Destacados</h2>
-          <p class="etiqueta mt-2 text-oro-oscuro">Los más pedidos</p>
+          <p class="etiqueta mt-2 text-acento">Selección de la casa</p>
         </div>
-        <a href="/catalogo/" class="etiqueta hidden text-negro transition-colors hover:text-oro-oscuro sm:block">Ver todo el catálogo</a>
+        <a href="/catalogo/" class="etiqueta hidden text-tinta transition-colors hover:text-acento sm:block">Ver todo el catálogo</a>
       </div>
       <div class="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
-        {destacadosGrid.map((p) => <TarjetaProducto producto={p} />)}
+        {dest.map((p) => <TarjetaProducto producto={p} />)}
       </div>
       <a href="/catalogo/" class="btn btn-borde mt-8 w-full sm:hidden">Ver todo el catálogo</a>
     </div>
@@ -146,28 +182,26 @@ const jsonLd = {
   <!-- Cómo pedir -->
   <section class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
     <h2 class="text-2xl md:text-3xl">Así de fácil</h2>
-    <p class="etiqueta mt-2 text-oro-oscuro">Tres pasos</p>
     <ol class="mt-8 grid gap-6 md:grid-cols-3 md:gap-8">
       {pasos.map((paso, i) => (
         <li class="border-t border-oro pt-5">
-          <p class="etiqueta text-oro-oscuro">Paso {i + 1}</p>
-          <h3 class="mt-2 text-lg">{paso.titulo}</h3>
-          <p class="mt-2 text-sm text-humo">{paso.texto}</p>
+          <h3 class="text-lg"><span class="text-acento">{i + 1}.</span> {paso.titulo}</h3>
+          <p class="mt-2 text-sm text-texto-suave">{paso.texto}</p>
         </li>
       ))}
     </ol>
-    <ul class="mt-10 grid gap-3 border border-arena bg-marfil p-5 text-sm sm:grid-cols-3 md:p-6">
+    <ul class="mt-10 grid gap-3 border border-linea bg-fondo-suave p-5 text-sm sm:grid-cols-3 md:p-6">
       <li class="flex items-center gap-3"><Chevron ancho={18} /> Pedido y confirmación por WhatsApp</li>
       <li class="flex items-center gap-3"><Chevron ancho={18} /> Entrega en {tienda.ubicacion}</li>
-      <li class="flex items-center gap-3"><Chevron ancho={18} /> Pago por {tienda.pagos.join(' o ').toLowerCase()}</li>
+      <li class="flex items-center gap-3"><Chevron ancho={18} /> {pagosConfigurados ? `Pago por ${textoPagos}` : 'Pago acordado por WhatsApp'}</li>
     </ul>
   </section>
 
   <!-- Novedades -->
-  <section class="bg-marfil">
+  <section class="bg-fondo-suave">
     <div class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
       <h2 class="text-2xl md:text-3xl">Novedades</h2>
-      <p class="etiqueta mt-2 text-oro-oscuro">Recién llegados</p>
+      <p class="etiqueta mt-2 text-acento">{subtituloNovedades}</p>
       <div class="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
         {novedadesGrid.map((p) => <TarjetaProducto producto={p} />)}
       </div>
@@ -177,7 +211,7 @@ const jsonLd = {
   <!-- Marcas -->
   <section class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
     <h2 class="text-2xl md:text-3xl">Marcas</h2>
-    <p class="etiqueta mt-2 text-oro-oscuro">{marcas.length} casas</p>
+    <p class="etiqueta mt-2 text-acento">{marcas.length} casas</p>
     <div class="mt-6 flex flex-wrap gap-2">
       {marcas.map((m) => (
         <a href={`/catalogo/?marca=${encodeURIComponent(m.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase())}`} class="chip">{m}</a>
@@ -200,4 +234,5 @@ const jsonLd = {
       </div>
     </div>
   </section>
+  <script src="../scripts/carrusel.ts"></script>
 </Base>

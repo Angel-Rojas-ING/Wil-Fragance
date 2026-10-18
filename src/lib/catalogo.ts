@@ -74,6 +74,12 @@ export function relacionados(p: Producto, n = 4): Producto[] {
     .map((x) => x.o);
 }
 
+/** Precio mínimo y máximo del catálogo (para los datos estructurados). */
+export function rangoPrecios(): { min: number; max: number } {
+  const precios = productos.map((p) => p.precio);
+  return { min: Math.min(...precios), max: Math.max(...precios) };
+}
+
 export const TAMANOS = [400, 800, 1200] as const;
 
 export function rutaImagen(imagen: string, tamano: (typeof TAMANOS)[number] = 800): string {

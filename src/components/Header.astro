@@ -32,7 +32,7 @@ const ruta = Astro.url.pathname;
         <a
           href={e.href}
           class="etiqueta text-blanco/90 transition-colors hover:text-oro"
-          aria-current={ruta === e.href ? 'page' : undefined}
+          aria-current={!e.href.includes('?') && ruta === e.href ? 'page' : undefined}
         >
           {e.texto}
         </a>
@@ -52,6 +52,16 @@ const ruta = Astro.url.pathname;
           aria-live="polite"
         >0</span>
       </a>
+      <button
+        type="button"
+        class="grid h-11 w-11 place-items-center text-blanco transition-colors hover:text-oro"
+        aria-label="Cambiar al modo oscuro"
+        aria-pressed="false"
+        data-tema-toggle
+      >
+        <Icono nombre="luna" class="solo-claro" />
+        <Icono nombre="sol" class="solo-oscuro" />
+      </button>
       <button
         type="button"
         class="grid h-11 w-11 place-items-center text-blanco transition-colors hover:text-oro lg:hidden"

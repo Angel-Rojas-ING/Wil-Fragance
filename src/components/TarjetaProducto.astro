@@ -15,7 +15,7 @@ const datosAnadir = JSON.stringify({ id: p.id, slug: p.slug, nombre: p.nombre, m
 ---
 
 <article
-  class="group flex flex-col border border-arena bg-blanco p-3 pb-3.5 transition-colors duration-300 hover:border-piedra"
+  class="group flex flex-col border border-linea bg-fondo p-3 pb-3.5 transition-colors duration-300 hover:border-piedra"
   data-producto
   data-id={p.id}
   data-genero={p.genero}
@@ -29,7 +29,7 @@ const datosAnadir = JSON.stringify({ id: p.id, slug: p.slug, nombre: p.nombre, m
   data-agotado={agotado ? '1' : '0'}
 >
   <a href={rutaPerfume(p)} class="block">
-    <div class="arco arco--limpio" class:list={{ 'opacity-60': agotado }}>
+    <div class="arco" class:list={{ 'opacity-60': agotado }}>
       {agotado && <span class="insignia">Agotado</span>}
       <img
         src={rutaImagen(p.imagen, 400)}
@@ -39,13 +39,13 @@ const datosAnadir = JSON.stringify({ id: p.id, slug: p.slug, nombre: p.nombre, m
         height="400"
         alt={nombreCompleto(p)}
         loading={prioridad ? 'eager' : 'lazy'}
-        decoding="async"
+        decoding={prioridad ? 'sync' : 'async'}
         fetchpriority={prioridad ? 'high' : 'auto'}
         transition:name={`foto-${p.slug}`}
       />
     </div>
-    <h3 class="mt-3 text-[15px] font-semibold leading-snug tracking-[-0.01em] text-negro">{p.nombre}</h3>
-    <p class="etiqueta mt-1 text-[10px] text-oro-oscuro">{p.marca}</p>
+    <h3 class="mt-3 text-[15px] font-bold leading-snug tracking-[-0.01em] text-tinta">{p.nombre}</h3>
+    <p class="etiqueta mt-1 text-[11px] text-acento">{p.marca}</p>
   </a>
   <p class="precio mt-2 text-[17px]"><small>RD$</small>{fmt(p.precio).replace('RD$', '')}</p>
   {agotado ? (

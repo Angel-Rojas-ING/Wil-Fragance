@@ -1,6 +1,7 @@
 /**
  * Datos de la tienda. Edita este archivo cuando tengas los datos definitivos;
- * los valores entre corchetes son marcadores que se ven en la web hasta que los cambies.
+ * los valores entre corchetes son marcadores: se ven en la web y la página /estado/
+ * los lista como pendientes hasta que los cambies.
  */
 export const tienda = {
   nombre: 'WIL Fragance',
@@ -17,17 +18,27 @@ export const tienda = {
   /** Ciudad o zona de entrega */
   ubicacion: '[Ciudad / zona]',
 
-  /** Métodos de pago que aceptas */
-  pagos: ['Transferencia', 'Efectivo'],
+  /** Métodos de pago que aceptas, p. ej. ['Transferencia', 'Efectivo'] */
+  pagos: ['[Métodos de pago]'],
 
-  /** Horario de atención (opcional) */
-  horario: 'Lunes a sábado, 9:00 a. m. a 7:00 p. m.',
+  /** Horario de atención, p. ej. 'Lunes a sábado, 9:00 a. m. a 7:00 p. m.' (vacío si no quieres mostrarlo) */
+  horario: '[Horario de atención]',
 
   /** Correo de contacto (opcional, déjalo vacío si no quieres mostrarlo) */
   correo: '',
 } as const;
 
+const esMarcador = (s: string) => /\[[^\]]*\]/.test(s);
+
 export const whatsappConfigurado = /^\d{10,15}$/.test(tienda.whatsapp);
+export const instagramConfigurado = !/tu_cuenta/i.test(tienda.instagram);
+export const ubicacionConfigurada = !esMarcador(tienda.ubicacion) && tienda.ubicacion.trim() !== '';
+export const pagosConfigurados = tienda.pagos.length > 0 && !tienda.pagos.some(esMarcador);
+export const horarioConfigurado = tienda.horario.trim() !== '' && !esMarcador(tienda.horario);
+
+/** "transferencia o efectivo" cuando está configurado; si no, una frase verdadera. */
+export const textoPagos = pagosConfigurados ? tienda.pagos.join(' o ').toLowerCase() : 'el método acordado por WhatsApp';
+
 export const instagramUsuario = tienda.instagram.replace(/^@/, '');
 export const instagramUrl = `https://instagram.com/${instagramUsuario}`;
 

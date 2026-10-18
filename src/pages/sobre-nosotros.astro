@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Chevron from '../components/Chevron.astro';
 import Icono from '../components/Icono.astro';
-import { tienda, enlaceWhatsApp, mensajes } from '../datos/tienda';
+import { tienda, enlaceWhatsApp, mensajes, pagosConfigurados, textoPagos } from '../datos/tienda';
 import { productos, marcas } from '../lib/catalogo';
 const arabes = productos.filter((p) => p.tipo === 'árabe').length;
 const disenador = productos.length - arabes;
@@ -18,58 +18,43 @@ const disenador = productos.length - arabes;
   </section>
 
   <section class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
-    <div class="grid gap-10 md:grid-cols-[1fr_1fr] md:gap-16">
-      <div class="prosa max-w-prose text-[15px] md:text-base">
-        <h2 class="text-2xl">Quiénes somos</h2>
-        <p class="mt-4">
-          {tienda.nombre} es una perfumería de {tienda.ubicacion}. Reunimos en un solo catálogo las fragancias de las casas de diseñador que todo el mundo conoce y los perfumes árabes que se han ganado un sitio por su calidad y su precio.
-        </p>
-        <p>
-          Vendemos como nos gusta comprar: fotos claras, precios en pesos sin letra pequeña y una persona real al otro lado de WhatsApp que confirma tu pedido, te orienta si dudas entre dos y te dice cuándo llega.
-        </p>
-        <p class="text-sm text-humo">[Texto de presentación pendiente de revisar por Wil: historia, desde cuándo, qué os diferencia.]</p>
-      </div>
-      <div class="grid gap-4 sm:grid-cols-2">
-        <div class="border border-arena bg-marfil p-5">
-          <p class="text-3xl font-bold text-negro">{disenador}</p>
-          <p class="etiqueta mt-1 text-oro-oscuro">Perfumes de diseñador</p>
-        </div>
-        <div class="border border-arena bg-marfil p-5">
-          <p class="text-3xl font-bold text-negro">{arabes}</p>
-          <p class="etiqueta mt-1 text-oro-oscuro">Perfumes árabes</p>
-        </div>
-        <div class="border border-arena bg-marfil p-5">
-          <p class="text-3xl font-bold text-negro">{marcas.length}</p>
-          <p class="etiqueta mt-1 text-oro-oscuro">Marcas</p>
-        </div>
-        <div class="border border-arena bg-marfil p-5">
-          <p class="text-3xl font-bold text-negro">1</p>
-          <p class="etiqueta mt-1 text-oro-oscuro">Mensaje para pedir</p>
-        </div>
-      </div>
+    <div class="prosa max-w-prose text-[15px] md:text-base">
+      <h2 class="text-2xl">Quiénes somos</h2>
+      <p class="mt-4">
+        {tienda.nombre} es una perfumería de {tienda.ubicacion}. Reunimos en un solo catálogo las fragancias de las casas de diseñador que todo el mundo conoce y los perfumes árabes que se han ganado un sitio por su calidad y su precio.
+      </p>
+      <p>
+        Vendemos como nos gusta comprar: fotos claras, precios en pesos sin letra pequeña y una persona real al otro lado de WhatsApp que confirma tu pedido, te orienta si dudas entre dos y te dice cuándo llega.
+      </p>
+      <p class="text-sm text-texto-suave">[Texto de presentación pendiente de revisar por Wil: historia, desde cuándo, qué os diferencia.]</p>
     </div>
 
-    <div class="mt-14 grid gap-8 border-t border-arena pt-10 md:grid-cols-3">
+    <div class="separador mt-12"><Chevron ancho={26} /></div>
+    <p class="etiqueta mt-6 text-center text-acento">{disenador} perfumes de diseñador · {arabes} árabes · {marcas.length} marcas · un mensaje para pedir</p>
+
+    <div class="mt-12 grid gap-8 border-t border-linea pt-10 md:grid-cols-3">
       <div>
         <h3 class="text-lg">Diseñador</h3>
-        <p class="mt-2 text-sm text-humo">Dior, Chanel, Carolina Herrera, Jean Paul Gaultier, Versace, Yves Saint Laurent y más. Las fragancias que ya conoces, al precio que ves en la ficha.</p>
+        <p class="mt-2 text-sm text-texto-suave">Dior, Chanel, Carolina Herrera, Jean Paul Gaultier, Versace, Yves Saint Laurent y más. Las fragancias que ya conoces, al precio que ves en la ficha.</p>
       </div>
       <div>
         <h3 class="text-lg">Árabes</h3>
-        <p class="mt-2 text-sm text-humo">Lattafa, Armaf, Afnan, Rasasi, French Avenue, Maison Alhambra. Perfumes de gran duración y proyección, muchos inspirados en clásicos de diseñador: busca "Similar a" en cada ficha.</p>
+        <p class="mt-2 text-sm text-texto-suave">Lattafa, Armaf, Afnan, Rasasi, French Avenue, Maison Alhambra. Perfumes de gran duración y proyección, muchos inspirados en clásicos de diseñador; si dudas a cuál se parece uno, pregúntanos.</p>
       </div>
       <div>
         <h3 class="text-lg">Pedido sencillo</h3>
-        <p class="mt-2 text-sm text-humo">Añades al carrito, escribes tu nombre y el botón abre WhatsApp con el pedido listo. Confirmamos disponibilidad, entrega en {tienda.ubicacion} y pago por {tienda.pagos.join(' o ').toLowerCase()}.</p>
+        <p class="mt-2 text-sm text-texto-suave">
+          Añades al carrito, escribes tu nombre y el botón abre WhatsApp con el pedido listo. Confirmamos disponibilidad, entrega en {tienda.ubicacion} y {pagosConfigurados ? `pago por ${textoPagos}` : 'la forma de pago'}.
+        </p>
       </div>
     </div>
   </section>
 
-  <section class="bg-marfil">
+  <section class="bg-fondo-suave">
     <div class="mx-auto flex max-w-7xl flex-col items-start gap-6 px-4 py-12 md:flex-row md:items-center md:justify-between md:px-6 md:py-16">
       <div>
         <h2 class="text-2xl">¿Hablamos?</h2>
-        <p class="mt-2 text-humo">Te ayudamos a elegir, también si es para regalar.</p>
+        <p class="mt-2 text-texto-suave">Te ayudamos a elegir, también si es para regalar.</p>
       </div>
       <a href={enlaceWhatsApp(mensajes.general)} target="_blank" rel="noopener" class="btn btn-negro"><Icono nombre="whatsapp" /> Escríbenos por WhatsApp</a>
     </div>

@@ -5,15 +5,17 @@
  */
 import Base from '../layouts/Base.astro';
 import { catalogo, productos } from '../lib/catalogo';
-import { tienda, whatsappConfigurado } from '../datos/tienda';
+import { whatsappConfigurado, instagramConfigurado, ubicacionConfigurada, pagosConfigurados, horarioConfigurado } from '../datos/tienda';
 
 const fecha = new Date(catalogo.generado).toLocaleString('es-DO', { dateStyle: 'full', timeStyle: 'short', timeZone: 'America/Santo_Domingo' });
 const agotados = productos.filter((p) => p.stock === 'agotado').length;
 const sinDatos = productos.filter((p) => !p.notas && !p.descripcion && p.similarA.length === 0).length;
 const pendientes = [
   !whatsappConfigurado && 'Número de WhatsApp (src/datos/tienda.ts → whatsapp)',
-  tienda.instagram.includes('tu_cuenta') && 'Cuenta de Instagram (src/datos/tienda.ts → instagram)',
-  tienda.ubicacion.startsWith('[') && 'Ciudad o zona de entrega (src/datos/tienda.ts → ubicacion)',
+  !instagramConfigurado && 'Cuenta de Instagram (src/datos/tienda.ts → instagram)',
+  !ubicacionConfigurada && 'Ciudad o zona de entrega (src/datos/tienda.ts → ubicacion)',
+  !pagosConfigurados && 'Métodos de pago (src/datos/tienda.ts → pagos)',
+  !horarioConfigurado && 'Horario de atención (src/datos/tienda.ts → horario)',
   !catalogo.hojaConfigurada && 'URL de la hoja de Google (variable SHEET_CSV_URL en Cloudflare Pages)',
 ].filter(Boolean) as string[];
 ---
@@ -21,14 +23,14 @@ const pendientes = [
 <Base titulo="Estado de la web" descripcion="Estado de la última compilación." noindex>
   <section class="mx-auto max-w-3xl px-4 py-10 md:px-6 md:py-16">
     <h1 class="text-3xl">Estado de la web</h1>
-    <p class="etiqueta mt-2 text-oro-oscuro">Solo para administración · no aparece en buscadores</p>
+    <p class="etiqueta mt-2 text-acento">Solo para administración · no aparece en buscadores</p>
 
-    <dl class="mt-8 grid gap-4 border border-arena bg-marfil p-5 text-sm sm:grid-cols-2">
-      <div><dt class="etiqueta text-[10px] text-oro-oscuro">Compilada</dt><dd class="mt-1">{fecha}</dd></div>
-      <div><dt class="etiqueta text-[10px] text-oro-oscuro">Fuente del catálogo</dt><dd class="mt-1">{catalogo.fuente === 'hoja' ? 'Hoja de Google (en vivo)' : 'productos.csv del repositorio (respaldo)'}</dd></div>
-      <div><dt class="etiqueta text-[10px] text-oro-oscuro">Productos publicados</dt><dd class="mt-1">{productos.length} ({agotados} agotados)</dd></div>
-      <div><dt class="etiqueta text-[10px] text-oro-oscuro">Filas omitidas</dt><dd class="mt-1">{catalogo.omitidos.length}</dd></div>
-      <div><dt class="etiqueta text-[10px] text-oro-oscuro">Fichas sin notas ni descripción</dt><dd class="mt-1">{sinDatos}</dd></div>
+    <dl class="mt-8 grid gap-4 border border-linea bg-fondo-suave p-5 text-sm sm:grid-cols-2">
+      <div><dt class="etiqueta text-[10px] text-acento">Compilada</dt><dd class="mt-1">{fecha}</dd></div>
+      <div><dt class="etiqueta text-[10px] text-acento">Fuente del catálogo</dt><dd class="mt-1">{catalogo.fuente === 'hoja' ? 'Hoja de Google (en vivo)' : 'productos.csv del repositorio (respaldo)'}</dd></div>
+      <div><dt class="etiqueta text-[10px] text-acento">Productos publicados</dt><dd class="mt-1">{productos.length} ({agotados} agotados)</dd></div>
+      <div><dt class="etiqueta text-[10px] text-acento">Filas omitidas</dt><dd class="mt-1">{catalogo.omitidos.length}</dd></div>
+      <div><dt class="etiqueta text-[10px] text-acento">Fichas sin notas ni descripción</dt><dd class="mt-1">{sinDatos}</dd></div>
     </dl>
 
     {pendientes.length > 0 && (
@@ -52,22 +54,22 @@ const pendientes = [
     <div class="mt-8">
       <h2 class="text-lg">Filas omitidas</h2>
       {catalogo.omitidos.length === 0 ? (
-        <p class="mt-2 text-sm text-humo">Ninguna: todas las filas de la hoja son válidas.</p>
+        <p class="mt-2 text-sm text-texto-suave">Ninguna: todas las filas de la hoja son válidas.</p>
       ) : (
         <table class="mt-3 w-full border-collapse text-sm">
           <thead>
             <tr class="text-left">
-              <th class="border-b border-arena py-2 pr-3">Fila</th>
-              <th class="border-b border-arena py-2 pr-3">Perfume</th>
-              <th class="border-b border-arena py-2">Problema</th>
+              <th class="border-b border-linea py-2 pr-3">Fila</th>
+              <th class="border-b border-linea py-2 pr-3">Perfume</th>
+              <th class="border-b border-linea py-2">Problema</th>
             </tr>
           </thead>
           <tbody>
             {catalogo.omitidos.map((o) => (
               <tr class="align-top">
-                <td class="border-b border-arena py-2 pr-3 tabular-nums">{o.fila}</td>
-                <td class="border-b border-arena py-2 pr-3">{o.nombre || o.id || '—'}</td>
-                <td class="border-b border-arena py-2">{o.errores.join('; ')}</td>
+                <td class="border-b border-linea py-2 pr-3 tabular-nums">{o.fila}</td>
+                <td class="border-b border-linea py-2 pr-3">{o.nombre || o.id || '—'}</td>
+                <td class="border-b border-linea py-2">{o.errores.join('; ')}</td>
               </tr>
             ))}
           </tbody>

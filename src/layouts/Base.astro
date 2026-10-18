@@ -5,6 +5,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFab from '../components/WhatsAppFab.astro';
 import { tienda } from '../datos/tienda';
+import fuenteLatin from '@fontsource-variable/montserrat/files/montserrat-latin-wght-normal.woff2?url';
 
 interface Props {
   titulo: string;
@@ -40,12 +41,23 @@ const bloquesLd = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script is:inline>
+      // Aplica el tema guardado (o el del sistema) antes de pintar, para que no parpadee.
+      (function () {
+        try {
+          var t = localStorage.getItem('wil.tema');
+          if (t !== 'claro' && t !== 'oscuro') t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro';
+          document.documentElement.dataset.tema = t;
+        } catch (e) {}
+      })();
+    </script>
     <title>{tituloPagina}</title>
+    <link rel="preload" href={fuenteLatin} as="font" type="font/woff2" crossorigin />
     <meta name="description" content={descripcion} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#000000" />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -92,6 +104,7 @@ const bloquesLd = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
         <a href="/carrito/" class="etiqueta whitespace-nowrap text-oro hover:text-blanco">Ver carrito</a>
       </div>
     </div>
+    <script src="../scripts/tema.ts"></script>
     <script src="../scripts/carrito.ts"></script>
   </body>
 </html>

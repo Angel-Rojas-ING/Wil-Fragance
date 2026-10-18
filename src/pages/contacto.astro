@@ -2,51 +2,51 @@
 import Base from '../layouts/Base.astro';
 import Icono from '../components/Icono.astro';
 import Chevron from '../components/Chevron.astro';
-import { tienda, enlaceWhatsApp, mensajes, instagramUrl, instagramUsuario, whatsappConfigurado } from '../datos/tienda';
+import { tienda, enlaceWhatsApp, mensajes, instagramUrl, instagramUsuario, whatsappConfigurado, horarioConfigurado, pagosConfigurados } from '../datos/tienda';
 
 const whatsappVisible = whatsappConfigurado
   ? `+${tienda.whatsapp.slice(0, 1)} (${tienda.whatsapp.slice(1, 4)}) ${tienda.whatsapp.slice(4, 7)}-${tienda.whatsapp.slice(7)}`
   : tienda.whatsapp;
 ---
 
-<Base titulo="Contacto" descripcion={`Escríbenos por WhatsApp o Instagram. ${tienda.nombre}, ${tienda.ubicacion}. ${tienda.horario}.`}>
+<Base titulo="Contacto" descripcion={`Escríbenos por WhatsApp o Instagram. ${tienda.nombre}, ${tienda.ubicacion}.${horarioConfigurado ? ` ${tienda.horario}.` : ''}`}>
   <section class="mx-auto max-w-7xl px-4 py-10 md:px-6 md:py-16">
     <h1 class="text-3xl md:text-4xl">Contacto</h1>
-    <p class="etiqueta mt-2 text-oro-oscuro">Te respondemos por WhatsApp</p>
+    <p class="etiqueta mt-2 text-acento">Te respondemos por WhatsApp</p>
 
     <div class="mt-8 grid gap-6 md:grid-cols-2">
       <a href={enlaceWhatsApp(mensajes.general)} target="_blank" rel="noopener" class="group block bg-negro p-6 text-blanco transition-colors hover:bg-carbon md:p-8">
         <Icono nombre="whatsapp" tamano={32} class="text-oro" />
         <p class="etiqueta mt-5 text-oro">WhatsApp</p>
         <p class="mt-2 text-2xl font-bold text-blanco">{whatsappVisible}</p>
-        <p class="mt-3 text-sm text-blanco/70">Pedidos, dudas y consultas de disponibilidad. {tienda.horario}.</p>
+        <p class="mt-3 text-sm text-blanco/70">Pedidos, dudas y consultas de disponibilidad.{horarioConfigurado && ` ${tienda.horario}.`}</p>
         <span class="btn btn-oro mt-6">Abrir WhatsApp</span>
       </a>
-      <a href={instagramUrl} target="_blank" rel="noopener" class="group block border border-arena bg-marfil p-6 transition-colors hover:border-negro md:p-8">
-        <Icono nombre="instagram" tamano={32} class="text-oro-oscuro" />
-        <p class="etiqueta mt-5 text-oro-oscuro">Instagram</p>
-        <p class="mt-2 text-2xl font-bold text-negro">@{instagramUsuario}</p>
-        <p class="mt-3 text-sm text-humo">Novedades, llegadas y ofertas. Escríbenos también por mensaje directo.</p>
+      <a href={instagramUrl} target="_blank" rel="noopener" class="group block border border-linea bg-fondo-suave p-6 transition-colors hover:border-tinta md:p-8">
+        <Icono nombre="instagram" tamano={32} class="text-acento" />
+        <p class="etiqueta mt-5 text-acento">Instagram</p>
+        <p class="mt-2 text-2xl font-bold text-tinta">@{instagramUsuario}</p>
+        <p class="mt-3 text-sm text-texto-suave">Novedades, llegadas y ofertas. Escríbenos también por mensaje directo.</p>
         <span class="btn btn-borde mt-6">Ver Instagram</span>
       </a>
     </div>
 
-    <dl class="mt-10 grid gap-6 border-t border-arena pt-8 sm:grid-cols-3">
+    <dl class="mt-10 grid gap-6 border-t border-linea pt-8 sm:grid-cols-3">
       <div>
-        <dt class="etiqueta flex items-center gap-2 text-oro-oscuro"><Icono nombre="ubicacion" tamano={16} /> Dónde estamos</dt>
+        <dt class="etiqueta flex items-center gap-2 text-acento"><Icono nombre="ubicacion" tamano={16} /> Dónde estamos</dt>
         <dd class="mt-2 text-[15px]">{tienda.ubicacion}</dd>
       </div>
       <div>
-        <dt class="etiqueta flex items-center gap-2 text-oro-oscuro"><Icono nombre="reloj" tamano={16} /> Horario</dt>
+        <dt class="etiqueta flex items-center gap-2 text-acento"><Icono nombre="reloj" tamano={16} /> Horario</dt>
         <dd class="mt-2 text-[15px]">{tienda.horario}</dd>
       </div>
       <div>
-        <dt class="etiqueta flex items-center gap-2 text-oro-oscuro"><Chevron ancho={16} /> Pago</dt>
-        <dd class="mt-2 text-[15px]">{tienda.pagos.join(' · ')}</dd>
+        <dt class="etiqueta flex items-center gap-2 text-acento"><Chevron ancho={16} /> Pago</dt>
+        <dd class="mt-2 text-[15px]">{pagosConfigurados ? tienda.pagos.join(' · ') : 'Se acuerda por WhatsApp'}</dd>
       </div>
     </dl>
     {tienda.correo && (
-      <p class="mt-6 text-sm text-humo">Correo: <a class="text-oro-oscuro underline underline-offset-4" href={`mailto:${tienda.correo}`}>{tienda.correo}</a></p>
+      <p class="mt-6 text-sm text-texto-suave">Correo: <a class="text-acento underline underline-offset-4" href={`mailto:${tienda.correo}`}>{tienda.correo}</a></p>
     )}
   </section>
 </Base>

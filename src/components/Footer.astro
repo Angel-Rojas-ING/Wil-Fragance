@@ -1,7 +1,7 @@
 ---
 import Icono from './Icono.astro';
 import Chevron from './Chevron.astro';
-import { tienda, enlaceWhatsApp, mensajes, instagramUrl, instagramUsuario } from '../datos/tienda';
+import { tienda, enlaceWhatsApp, mensajes, instagramUrl, instagramUsuario, horarioConfigurado, pagosConfigurados } from '../datos/tienda';
 const anio = new Date().getFullYear();
 ---
 
@@ -46,10 +46,12 @@ const anio = new Date().getFullYear();
             </a>
           </li>
           <li class="inline-flex items-start gap-2 text-blanco/80"><Icono nombre="ubicacion" tamano={18} class="mt-0.5 flex-none" /> {tienda.ubicacion}</li>
-          <li class="inline-flex items-start gap-2 text-blanco/80"><Icono nombre="reloj" tamano={18} class="mt-0.5 flex-none" /> {tienda.horario}</li>
+          {horarioConfigurado && (
+            <li class="inline-flex items-start gap-2 text-blanco/80"><Icono nombre="reloj" tamano={18} class="mt-0.5 flex-none" /> {tienda.horario}</li>
+          )}
         </ul>
         <p class="etiqueta mt-6 text-oro">Pago</p>
-        <p class="mt-2 text-sm text-blanco/80">{tienda.pagos.join(' · ')}</p>
+        <p class="mt-2 text-sm text-blanco/80">{pagosConfigurados ? tienda.pagos.join(' · ') : 'Se acuerda por WhatsApp al confirmar el pedido'}</p>
       </div>
     </div>
     <div class="mt-12 flex flex-col gap-3 border-t border-grafito pt-6 text-xs text-blanco/55 md:flex-row md:items-center md:justify-between">

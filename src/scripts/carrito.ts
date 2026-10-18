@@ -117,7 +117,7 @@ function enlazarBotonesAnadir() {
       const texto = boton.querySelector<HTMLElement>('[data-texto-anadir]');
       if (texto && !boton.dataset.original) {
         boton.dataset.original = texto.textContent || 'Añadir';
-        texto.textContent = 'Añadido ✓';
+        texto.textContent = 'Añadido';
         boton.classList.add('btn-oro');
         window.setTimeout(() => {
           texto.textContent = boton.dataset.original || 'Añadir';
@@ -220,6 +220,7 @@ function iniciarPaginaCarrito() {
 
   nombreInput.addEventListener('input', () => {
     if (errorNombre) errorNombre.hidden = true;
+    nombreInput.removeAttribute('aria-invalid');
     try {
       localStorage.setItem('wil.nombre', nombreInput.value);
     } catch {
@@ -232,6 +233,7 @@ function iniciarPaginaCarrito() {
       ev.preventDefault();
       if (nombreInput.value.trim().length < 2) {
         if (errorNombre) errorNombre.hidden = false;
+        nombreInput.setAttribute('aria-invalid', 'true');
         nombreInput.focus();
       }
     }
