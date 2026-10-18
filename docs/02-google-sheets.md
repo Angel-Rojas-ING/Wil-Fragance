@@ -38,7 +38,7 @@ La web lee el catálogo desde una hoja de Google publicada como CSV. Tú editas 
 | `ocasion` | no | `Día`, `Noche`, `Oficina`, `Fiesta`… |
 | `temporada` | no | `Verano`, `Invierno`, `Todo el año`… |
 | `similar_a` | no | Perfumes a los que se parece, separados por punto y coma: `Creed Aventus; Dior Sauvage`. El buscador también encuentra el perfume por estos nombres. |
-| `destacado` | no | `sí` para mostrarlo en "Destacados" de la portada (los primeros ocho; el primero sale en el banner). |
+| `destacado` | no | `sí` para mostrarlo en "Destacados" de la portada (los primeros ocho; todos ellos rotan en el carrusel del banner). |
 | `novedad` | no | `sí` para mostrarlo en "Novedades". Si ninguno está marcado, salen los últimos ids añadidos. |
 
 Reglas que aplica la web al compilarse:

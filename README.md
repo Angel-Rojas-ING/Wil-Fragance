@@ -60,6 +60,10 @@ docs/                    Guías paso a paso
 DESIGN.md, PRODUCT.md    Sistema visual y contexto del producto
 ```
 
+## Tema claro y oscuro
+
+La web sigue la preferencia del sistema del visitante y tiene un botón (luna/sol) en la cabecera para cambiarla; la elección se guarda en el navegador. Los colores de cada tema viven en `src/styles/global.css` (`--t-*`); la cabecera, el banner, el pie y los arcos blancos de las fotos son iguales en los dos.
+
 ## Datos de la tienda
 
 Edita `src/datos/tienda.ts`: número de WhatsApp (con código de país, solo dígitos), Instagram, ciudad o zona, métodos de pago y horario. Hasta que los cambies, la web muestra marcadores entre corchetes y `/estado/` lo recuerda.
