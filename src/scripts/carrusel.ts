@@ -34,9 +34,13 @@ function iniciarCarrusel(raiz: HTMLElement) {
     puntos.forEach((p, i) => p.setAttribute('aria-current', String(i === indice)));
   }
 
+  const posicion = (i: number) => diapositivas[i].offsetLeft - pista.offsetLeft;
+
   function ir(n: number, suave = true) {
+    // Si el desplazamiento anterior no llegó a completarse (pestaña en segundo plano), este salto es instantáneo.
+    const atrasado = Math.abs(pista.scrollLeft - posicion(indice)) > 4;
     indice = (n + diapositivas.length) % diapositivas.length;
-    pista.scrollTo({ left: diapositivas[indice].offsetLeft - pista.offsetLeft, behavior: suave && !reducirMovimiento ? 'smooth' : 'auto' });
+    pista.scrollTo({ left: posicion(indice), behavior: suave && !reducirMovimiento && !atrasado ? 'smooth' : 'auto' });
     pintar();
   }
 
