@@ -8,8 +8,8 @@ export const tienda = {
   descripcion:
     'Perfumes de diseñador y árabes en República Dominicana. Elige, arma tu carrito y pide por WhatsApp.',
 
-  /** Número de WhatsApp con código de país y solo dígitos, p. ej. 18095551234 */
-  whatsapp: '1809XXXXXXX',
+  /** Número de WhatsApp con código de país y solo dígitos (RD = 1 + número) */
+  whatsapp: '18498162401',
 
   /** Cuenta de Instagram, con o sin @ */
   instagram: '@tu_cuenta',
