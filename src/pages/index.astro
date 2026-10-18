@@ -108,7 +108,7 @@ const jsonLd = {
           <span class="columna h-[60%] md:w-14 md:[--hueco:18px]" aria-hidden="true"></span>
         </div>
 
-        <p class="mt-5 text-center text-sm text-blanco/80" aria-live="polite">
+        <p class="mt-5 text-center text-sm text-blanco/80" data-leyenda aria-live="off">
           <a href={rutaPerfume(estrella)} class="hover:text-oro" data-leyenda-enlace>
             <span class="font-bold text-blanco" data-leyenda-nombre>{estrella.nombre}</span>
             <span class="etiqueta ml-2 text-[11px] text-oro" data-leyenda-marca>{estrella.marca}</span>
@@ -124,13 +124,17 @@ const jsonLd = {
             </button>
             <div class="flex items-center">
               {diapositivas.map((p, i) => (
-                <button type="button" class="grid h-8 w-6 place-items-center" data-punto aria-label={`Ir a ${nombreCompleto(p)}`} aria-current={i === 0 ? 'true' : 'false'}>
+                <button type="button" class="grid h-11 w-8 place-items-center" data-punto aria-label={`Ir a ${nombreCompleto(p)}`} aria-current={i === 0 ? 'true' : 'false'}>
                   <span class="punto"></span>
                 </button>
               ))}
             </div>
             <button type="button" class="grid h-11 w-11 place-items-center text-blanco/70 transition-colors hover:text-oro" data-siguiente aria-label="Siguiente">
               <Icono nombre="derecha" />
+            </button>
+            <button type="button" class="ml-1 grid h-11 w-11 place-items-center text-blanco/70 transition-colors hover:text-oro" data-pausa aria-pressed="false" aria-label="Pausar el carrusel">
+              <Icono nombre="pausa" class="cuando-activo" tamano={18} />
+              <Icono nombre="reproducir" class="cuando-pausado" tamano={18} />
             </button>
           </div>
         )}

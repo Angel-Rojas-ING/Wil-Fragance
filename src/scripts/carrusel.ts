@@ -21,9 +21,17 @@ function iniciarCarrusel(raiz: HTMLElement) {
     enlaces: Array.from(raiz.querySelectorAll<HTMLAnchorElement>('[data-leyenda-enlace]')),
   };
   const puntos = Array.from(raiz.querySelectorAll<HTMLButtonElement>('[data-punto]'));
+  const botonPausa = raiz.querySelector<HTMLButtonElement>('[data-pausa]');
+  const contenedorLeyenda = raiz.querySelector<HTMLElement>('[data-leyenda]');
   const reducirMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let indice = 0;
   let temporizador: number | undefined;
+  let pausadoPorUsuario = false;
+
+  // Mientras rota solo, la leyenda no se anuncia al lector de pantalla; sí cuando el visitante lo maneja.
+  function anunciar(activo: boolean) {
+    contenedorLeyenda?.setAttribute('aria-live', activo ? 'polite' : 'off');
+  }
 
   function pintar() {
     const d = diapositivas[indice];
@@ -50,15 +58,25 @@ function iniciarCarrusel(raiz: HTMLElement) {
       temporizadores.delete(temporizador);
       temporizador = undefined;
     }
+    anunciar(true);
   }
 
-  // Siempre avanza solo; con "reducir movimiento" el cambio es instantáneo en vez de deslizado.
+  // Avanza solo salvo que el visitante lo pause; con "reducir movimiento" el cambio es instantáneo en vez de deslizado.
   function arrancar() {
-    if (document.hidden) return;
+    if (document.hidden || pausadoPorUsuario) return;
     parar();
+    anunciar(false);
     temporizador = window.setInterval(() => ir(indice + 1), INTERVALO);
     temporizadores.add(temporizador);
   }
+
+  botonPausa?.addEventListener('click', () => {
+    pausadoPorUsuario = !pausadoPorUsuario;
+    botonPausa.setAttribute('aria-pressed', String(pausadoPorUsuario));
+    botonPausa.setAttribute('aria-label', pausadoPorUsuario ? 'Reanudar el carrusel' : 'Pausar el carrusel');
+    if (pausadoPorUsuario) parar();
+    else arrancar();
+  });
 
   // Cuando el usuario desliza con el dedo, la diapositiva visible manda.
   const observador = new IntersectionObserver(
