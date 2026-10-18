@@ -1,0 +1,104 @@
+---
+import Base from '../layouts/Base.astro';
+import TarjetaProducto from '../components/TarjetaProducto.astro';
+import Chevron from '../components/Chevron.astro';
+import Icono from '../components/Icono.astro';
+import { tienda, enlaceWhatsApp, mensajes } from '../datos/tienda';
+import { productos, marcas, hayUnisex } from '../lib/catalogo';
+import { normalizar } from '../lib/formato';
+
+const numericos = productos.every((p) => /^\d+$/.test(p.id));
+const ordenados = [...productos].sort((a, b) => {
+  if (a.destacado !== b.destacado) return a.destacado ? -1 : 1;
+  if (a.stock !== b.stock) return a.stock === 'disponible' ? -1 : 1;
+  return numericos ? Number(b.id) - Number(a.id) : 0;
+});
+
+const rangos = [
+  { valor: '', texto: 'Cualquier precio' },
+  { valor: '0-3000', texto: 'Hasta RD$3,000' },
+  { valor: '3000-6000', texto: 'RD$3,000 a RD$6,000' },
+  { valor: '6000-10000', texto: 'RD$6,000 a RD$10,000' },
+  { valor: '10000-', texto: 'Más de RD$10,000' },
+];
+---
+
+<Base
+  titulo="Catálogo de perfumes"
+  descripcion={`Todos los perfumes de ${tienda.nombre}: ${productos.length} fragancias de diseñador y árabes para hombre y mujer. Filtra por marca y precio y pide por WhatsApp.`}
+>
+  <section class="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12" data-catalogo>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h1 class="text-3xl md:text-4xl">Catálogo</h1>
+        <p class="etiqueta mt-2 text-oro-oscuro"><span data-conteo>{productos.length}</span> perfumes <span data-resumen class="normal-case tracking-normal text-humo"></span></p>
+      </div>
+    </div>
+
+    <form class="mt-6" role="search" aria-label="Buscar y filtrar" onsubmit="return false">
+      <label for="buscar" class="sr-only">Buscar por nombre, marca o parecido</label>
+      <div class="relative">
+        <span class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-humo"><Icono nombre="buscar" tamano={20} /></span>
+        <input
+          id="buscar"
+          type="search"
+          class="campo pl-12"
+          placeholder="Busca por nombre, marca o parecido (p. ej. Aventus)"
+          autocomplete="off"
+          enterkeyhint="search"
+          data-q
+        />
+      </div>
+
+      <div class="fila-deslizable mt-4" role="group" aria-label="Género y tipo">
+        <button type="button" class="chip" data-filtro="genero" data-valor="" aria-pressed="true">Todos</button>
+        <button type="button" class="chip" data-filtro="genero" data-valor="hombre" aria-pressed="false">Hombre</button>
+        <button type="button" class="chip" data-filtro="genero" data-valor="mujer" aria-pressed="false">Mujer</button>
+        {hayUnisex && <button type="button" class="chip" data-filtro="genero" data-valor="unisex" aria-pressed="false">Unisex</button>}
+        <span class="mx-1 w-px flex-none self-stretch bg-arena" aria-hidden="true"></span>
+        <button type="button" class="chip" data-filtro="tipo" data-valor="disenador" aria-pressed="false">Diseñador</button>
+        <button type="button" class="chip" data-filtro="tipo" data-valor="arabe" aria-pressed="false">Árabes</button>
+      </div>
+
+      <div class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <label class="block">
+          <span class="sr-only">Marca</span>
+          <select class="campo" data-filtro-select="marca">
+            <option value="">Todas las marcas</option>
+            {marcas.map((m) => <option value={normalizar(m)}>{m}</option>)}
+          </select>
+        </label>
+        <label class="block">
+          <span class="sr-only">Precio</span>
+          <select class="campo" data-filtro-select="precio">
+            {rangos.map((r) => <option value={r.valor}>{r.texto}</option>)}
+          </select>
+        </label>
+        <label class="block">
+          <span class="sr-only">Ordenar</span>
+          <select class="campo" data-orden>
+            <option value="recomendados">Recomendados</option>
+            <option value="nombre">Nombre, de A a Z</option>
+            <option value="precio-asc">Precio, de menor a mayor</option>
+            <option value="precio-desc">Precio, de mayor a menor</option>
+          </select>
+        </label>
+        <button type="button" class="btn btn-borde" data-limpiar><span class="sm:hidden">Limpiar</span><span class="hidden sm:inline">Limpiar filtros</span></button>
+      </div>
+    </form>
+
+    <div class="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4" data-rejilla>
+      {ordenados.map((p, i) => <TarjetaProducto producto={p} prioridad={i < 4} />)}
+    </div>
+
+    <div hidden data-vacio class="border border-arena bg-marfil px-6 py-16 text-center">
+      <div class="flex justify-center"><Chevron ancho={30} /></div>
+      <p class="mt-5 text-lg font-semibold text-negro">No encontramos perfumes con esos filtros</p>
+      <p class="mt-2 text-sm text-humo">Prueba con otra palabra o <button type="button" class="underline underline-offset-4" data-limpiar>limpia los filtros</button>.</p>
+      <a href={enlaceWhatsApp(mensajes.general)} target="_blank" rel="noopener" class="btn btn-negro mt-6">
+        <Icono nombre="whatsapp" /> Pregúntanos por WhatsApp
+      </a>
+    </div>
+  </section>
+  <script src="../scripts/catalogo-filtros.ts"></script>
+</Base>

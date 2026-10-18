@@ -1,0 +1,60 @@
+---
+import Icono from './Icono.astro';
+import Chevron from './Chevron.astro';
+import { tienda, enlaceWhatsApp, mensajes, instagramUrl, instagramUsuario } from '../datos/tienda';
+const anio = new Date().getFullYear();
+---
+
+<footer class="bg-negro text-blanco">
+  <div class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+    <div class="separador separador--oscuro mb-12"><Chevron ancho={30} /></div>
+    <div class="grid gap-10 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
+      <div>
+        <img src="/logo/logo-wil-blanco.svg" width="120" height="130" alt="WIL Fragance" decoding="async" loading="lazy" />
+        <p class="mt-5 max-w-xs text-sm text-blanco/70">{tienda.descripcion}</p>
+      </div>
+      <div>
+        <p class="etiqueta text-oro">Tienda</p>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-oro" href="/catalogo/">Catálogo completo</a></li>
+          <li><a class="hover:text-oro" href="/catalogo/?genero=hombre">Hombre</a></li>
+          <li><a class="hover:text-oro" href="/catalogo/?genero=mujer">Mujer</a></li>
+          <li><a class="hover:text-oro" href="/catalogo/?tipo=arabe">Perfumes árabes</a></li>
+          <li><a class="hover:text-oro" href="/catalogo/?tipo=disenador">Perfumes de diseñador</a></li>
+          <li><a class="hover:text-oro" href="/carrito/">Carrito</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="etiqueta text-oro">Ayuda</p>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-oro" href="/sobre-nosotros/">Sobre nosotros</a></li>
+          <li><a class="hover:text-oro" href="/preguntas-frecuentes/">Preguntas frecuentes</a></li>
+          <li><a class="hover:text-oro" href="/contacto/">Contacto</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="etiqueta text-oro">Contacto</p>
+        <ul class="mt-4 space-y-3 text-sm">
+          <li>
+            <a class="inline-flex items-center gap-2 hover:text-oro" href={enlaceWhatsApp(mensajes.general)} target="_blank" rel="noopener">
+              <Icono nombre="whatsapp" tamano={18} /> WhatsApp
+            </a>
+          </li>
+          <li>
+            <a class="inline-flex items-center gap-2 hover:text-oro" href={instagramUrl} target="_blank" rel="noopener">
+              <Icono nombre="instagram" tamano={18} /> @{instagramUsuario}
+            </a>
+          </li>
+          <li class="inline-flex items-start gap-2 text-blanco/80"><Icono nombre="ubicacion" tamano={18} class="mt-0.5 flex-none" /> {tienda.ubicacion}</li>
+          <li class="inline-flex items-start gap-2 text-blanco/80"><Icono nombre="reloj" tamano={18} class="mt-0.5 flex-none" /> {tienda.horario}</li>
+        </ul>
+        <p class="etiqueta mt-6 text-oro">Pago</p>
+        <p class="mt-2 text-sm text-blanco/80">{tienda.pagos.join(' · ')}</p>
+      </div>
+    </div>
+    <div class="mt-12 flex flex-col gap-3 border-t border-grafito pt-6 text-xs text-blanco/55 md:flex-row md:items-center md:justify-between">
+      <p>© {anio} {tienda.nombre}. {tienda.ubicacion}.</p>
+      <p>Los pedidos se confirman por WhatsApp. Precios en pesos dominicanos (RD$).</p>
+    </div>
+  </div>
+</footer>

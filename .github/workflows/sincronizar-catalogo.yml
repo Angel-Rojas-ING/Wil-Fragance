@@ -1,0 +1,103 @@
+name: Sincronizar catálogo con Google Sheets
+
+# Cada hora comprueba si la hoja publicada cambió. Si cambió, guarda el nuevo
+# productos.csv en el repositorio y lo sube: Cloudflare Pages detecta el push y
+# vuelve a publicar la web. Si no cambió, no hace nada (no gasta compilaciones).
+#
+# Botón manual: pestaña "Actions" → "Sincronizar catálogo con Google Sheets" →
+# "Run workflow". Si la hoja no cambió, llama al deploy hook de Cloudflare para
+# publicar igualmente (útil tras subir fotos nuevas o cambiar textos).
+#
+# Secretos necesarios (Settings → Secrets and variables → Actions):
+#   SHEET_CSV_URL       URL de la hoja publicada como CSV
+#   CF_DEPLOY_HOOK_URL  Deploy hook de Cloudflare Pages (solo para el botón manual)
+
+on:
+  schedule:
+    - cron: '7 * * * *' # cada hora, en el minuto 7 (la hora en punto va saturada en GitHub)
+  workflow_dispatch:
+    inputs:
+      publicar:
+        description: 'Publicar la web aunque la hoja no haya cambiado'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sincronizar-catalogo
+  cancel-in-progress: false
+
+jobs:
+  sincronizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci --no-audit --no-fund
+
+      - name: Descargar la hoja publicada como CSV
+        env:
+          SHEET_CSV_URL: ${{ secrets.SHEET_CSV_URL }}
+        run: |
+          if [ -z "$SHEET_CSV_URL" ]; then
+            echo "::error::Falta el secreto SHEET_CSV_URL. Añádelo en Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          curl --fail --silent --show-error --location --retry 3 --retry-delay 10 --max-time 60 "$SHEET_CSV_URL" -o /tmp/hoja.csv
+          node -e "
+            const fs = require('fs');
+            const limpiar = (t) => { t = t.replace(/^﻿/, '').replace(/\r\n?/g, '\n').trimEnd() + '\n'; return t; };
+            fs.writeFileSync('/tmp/hoja.csv', limpiar(fs.readFileSync('/tmp/hoja.csv', 'utf8')));
+            fs.writeFileSync('/tmp/actual.csv', limpiar(fs.readFileSync('productos.csv', 'utf8')));
+          "
+          echo "Hoja descargada: $(wc -l < /tmp/hoja.csv) líneas."
+
+      - name: Validar la hoja (filas con errores se avisan; sin productos válidos se detiene)
+        run: node scripts/validar.mjs /tmp/hoja.csv
+
+      - name: Comprobar si la hoja cambió
+        id: cambios
+        run: |
+          if cmp -s /tmp/hoja.csv /tmp/actual.csv; then
+            echo "cambio=false" >> "$GITHUB_OUTPUT"
+            echo "La hoja no cambió desde la última sincronización."
+          else
+            echo "cambio=true" >> "$GITHUB_OUTPUT"
+            echo "La hoja cambió: se actualizará productos.csv."
+          fi
+
+      - name: Guardar productos.csv y publicar (Cloudflare Pages compila al recibir el push)
+        if: steps.cambios.outputs.cambio == 'true'
+        run: |
+          cp /tmp/hoja.csv productos.csv
+          git config user.name "catalogo-bot"
+          git config user.email "catalogo-bot@users.noreply.github.com"
+          git add productos.csv
+          git commit -m "Actualiza el catálogo desde Google Sheets"
+          git push
+          echo "## Catálogo actualizado" >> "$GITHUB_STEP_SUMMARY"
+          echo "Se subió un nuevo productos.csv; Cloudflare Pages publicará la web en unos minutos." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publicar al momento aunque la hoja no cambiara (solo botón manual)
+        if: github.event_name == 'workflow_dispatch' && steps.cambios.outputs.cambio == 'false' && inputs.publicar
+        env:
+          CF_DEPLOY_HOOK_URL: ${{ secrets.CF_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$CF_DEPLOY_HOOK_URL" ]; then
+            echo "::error::Falta el secreto CF_DEPLOY_HOOK_URL (Cloudflare Pages → Settings → Builds → Deploy hooks)."
+            exit 1
+          fi
+          curl --fail --silent --show-error --retry 2 -X POST "$CF_DEPLOY_HOOK_URL" > /dev/null
+          echo "## Publicación solicitada" >> "$GITHUB_STEP_SUMMARY"
+          echo "La hoja no cambió; se pidió a Cloudflare Pages que vuelva a publicar la web." >> "$GITHUB_STEP_SUMMARY"

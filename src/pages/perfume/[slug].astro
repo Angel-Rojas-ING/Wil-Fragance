@@ -1,0 +1,238 @@
+---
+import Base from '../../layouts/Base.astro';
+import TarjetaProducto from '../../components/TarjetaProducto.astro';
+import Icono from '../../components/Icono.astro';
+import { tienda, enlaceWhatsApp, mensajes } from '../../datos/tienda';
+import { productos, relacionados, piramideNotas, rutaImagen, srcsetImagen, rutaOG, nombreCompleto, type Producto } from '../../lib/catalogo';
+import { precio, etiquetaGenero, etiquetaTipo, normalizar } from '../../lib/formato';
+
+export function getStaticPaths() {
+  return productos.map((p) => ({ params: { slug: p.slug }, props: { producto: p } }));
+}
+
+interface Props {
+  producto: Producto;
+}
+const { producto: p } = Astro.props;
+const agotado = p.stock === 'agotado';
+const completo = nombreCompleto(p);
+const rel = relacionados(p, 4);
+const piramide = piramideNotas(p.notas);
+const site = Astro.site ?? new URL('https://wil-fragance.pages.dev');
+const canonical = new URL(Astro.url.pathname, site).href;
+
+const titulo = `${p.nombre} de ${p.marca}`;
+const detalle = [p.concentracion, p.ml ? `${p.ml} ml` : ''].filter(Boolean).join(', ');
+const descripcion = [
+  `${p.nombre} de ${p.marca}, perfume ${p.tipo} para ${p.genero}${detalle ? ` (${detalle})` : ''}. ${precio(p.precio)}.`,
+  agotado ? 'Agotado por ahora: te avisamos por WhatsApp cuando llegue.' : `Pídelo por WhatsApp en ${tienda.nombre}, ${tienda.ubicacion}.`,
+  p.descripcion ? p.descripcion.slice(0, 140) : '',
+]
+  .filter(Boolean)
+  .join(' ');
+
+const datosAnadir = JSON.stringify({ id: p.id, slug: p.slug, nombre: p.nombre, marca: p.marca, precio: p.precio, imagen: rutaImagen(p.imagen, 400) });
+const especificaciones = [
+  ['Concentración', p.concentracion],
+  ['Tamaño', p.ml ? `${p.ml} ml` : ''],
+  ['Ocasión', p.ocasion],
+  ['Temporada', p.temporada],
+  ['Tipo', etiquetaTipo[p.tipo]],
+  ['Género', etiquetaGenero[p.genero]],
+].filter(([, v]) => v);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: completo,
+    image: [new URL(rutaOG(p.imagen), site).href, new URL(rutaImagen(p.imagen, 1200), site).href],
+    description: descripcion,
+    sku: p.id,
+    brand: { '@type': 'Brand', name: p.marca },
+    category: `Perfume ${p.tipo} para ${p.genero}`,
+    offers: {
+      '@type': 'Offer',
+      url: canonical,
+      priceCurrency: 'DOP',
+      price: p.precio,
+      availability: agotado ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+      itemCondition: 'https://schema.org/NewCondition',
+      seller: { '@type': 'Organization', name: tienda.nombre },
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: site.href },
+      { '@type': 'ListItem', position: 2, name: 'Catálogo', item: new URL('/catalogo/', site).href },
+      { '@type': 'ListItem', position: 3, name: p.marca, item: new URL(`/catalogo/?marca=${encodeURIComponent(normalizar(p.marca))}`, site).href },
+      { '@type': 'ListItem', position: 4, name: p.nombre, item: canonical },
+    ],
+  },
+];
+---
+
+<Base titulo={titulo} descripcion={descripcion} imagen={rutaOG(p.imagen)} tipoOG="product" jsonLd={jsonLd}>
+  <Fragment slot="head">
+    <meta property="product:price:amount" content={String(p.precio)} />
+    <meta property="product:price:currency" content="DOP" />
+    <meta property="product:availability" content={agotado ? 'out of stock' : 'in stock'} />
+  </Fragment>
+
+  <nav aria-label="Migas de pan" class="mx-auto max-w-7xl px-4 pt-5 text-xs text-humo md:px-6">
+    <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+      <li><a href="/" class="hover:text-negro">Inicio</a></li>
+      <li aria-hidden="true">›</li>
+      <li><a href="/catalogo/" class="hover:text-negro">Catálogo</a></li>
+      <li aria-hidden="true">›</li>
+      <li><a href={`/catalogo/?marca=${encodeURIComponent(normalizar(p.marca))}`} class="hover:text-negro">{p.marca}</a></li>
+      <li aria-hidden="true">›</li>
+      <li aria-current="page" class="text-carbon">{p.nombre}</li>
+    </ol>
+  </nav>
+
+  <section class="mx-auto grid max-w-7xl gap-8 px-4 py-6 md:grid-cols-2 md:gap-14 md:px-6 md:py-10" data-producto>
+    <div class="mx-auto w-full max-w-md md:max-w-none">
+      <div class="arco arco--limpio" class:list={{ 'opacity-60': agotado }}>
+        {agotado && <span class="insignia">Agotado</span>}
+        <img
+          src={rutaImagen(p.imagen, 800)}
+          srcset={srcsetImagen(p.imagen)}
+          sizes="(min-width: 768px) 44vw, 92vw"
+          width="800"
+          height="800"
+          alt={completo}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          transition:name={`foto-${p.slug}`}
+        />
+      </div>
+    </div>
+
+    <div>
+      <h1 class="text-3xl md:text-4xl">{p.nombre}</h1>
+      <p class="etiqueta mt-3 text-oro-oscuro">
+        <a href={`/catalogo/?marca=${encodeURIComponent(normalizar(p.marca))}`} class="hover:text-negro">{p.marca}</a>
+        <span class="mx-1 text-piedra">·</span>{etiquetaTipo[p.tipo]}
+        <span class="mx-1 text-piedra">·</span>{etiquetaGenero[p.genero]}
+      </p>
+      <p class="precio mt-5 text-3xl md:text-4xl"><small>RD$</small>{precio(p.precio).replace('RD$', '')}</p>
+      {detalle && <p class="mt-1 text-sm text-humo">{detalle}</p>}
+
+      {agotado ? (
+        <div class="mt-6 border border-arena bg-marfil p-5">
+          <p class="font-semibold text-negro">Agotado por ahora</p>
+          <p class="mt-1 text-sm text-humo">Te avisamos por WhatsApp en cuanto vuelva a estar disponible.</p>
+          <a href={enlaceWhatsApp(mensajes.avisame(completo))} target="_blank" rel="noopener" class="btn btn-negro mt-4 w-full sm:w-auto">
+            <Icono nombre="whatsapp" /> Avísame cuando llegue
+          </a>
+        </div>
+      ) : (
+        <div class="mt-6">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+            <div class="inline-grid h-12 grid-cols-[48px_56px_48px] border border-arena" data-selector-cantidad>
+              <button type="button" class="grid place-items-center text-humo transition-colors hover:text-negro" data-menos aria-label="Una unidad menos">
+                <Icono nombre="menos" tamano={18} />
+              </button>
+              <input
+                type="number"
+                min="1"
+                max="20"
+                value="1"
+                inputmode="numeric"
+                aria-label="Cantidad"
+                class="w-full border-x border-arena text-center font-semibold [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                data-cantidad
+              />
+              <button type="button" class="grid place-items-center text-humo transition-colors hover:text-negro" data-mas aria-label="Una unidad más">
+                <Icono nombre="mas" tamano={18} />
+              </button>
+            </div>
+            <button type="button" class="btn btn-negro flex-1" data-anadir={datosAnadir}>
+              <Icono nombre="bolsa" /> <span data-texto-anadir>Añadir al carrito</span>
+            </button>
+          </div>
+          <a href={enlaceWhatsApp(mensajes.consulta(completo))} target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-2 text-sm text-oro-oscuro underline underline-offset-4 hover:text-negro">
+            <Icono nombre="whatsapp" tamano={16} /> Preguntar por este perfume
+          </a>
+        </div>
+      )}
+
+      {especificaciones.length > 0 && (
+        <dl class="mt-8 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-arena pt-6 text-sm sm:grid-cols-3">
+          {especificaciones.map(([k, v]) => (
+            <div>
+              <dt class="etiqueta text-[10px] text-oro-oscuro">{k}</dt>
+              <dd class="mt-1 text-carbon">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      {piramide ? (
+        <div class="mt-8 border-t border-arena pt-6">
+          <h2 class="text-lg">Notas olfativas</h2>
+          <div class="mt-4 grid grid-cols-3 gap-4">
+            {[
+              ['Salida', piramide.salida],
+              ['Corazón', piramide.corazon],
+              ['Fondo', piramide.fondo],
+            ].map(([k, v]) => (
+              <div class="border-t border-oro pt-3">
+                <p class="etiqueta text-[10px] text-oro-oscuro">{k}</p>
+                <p class="mt-1 text-sm">{v || '—'}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        p.notas && (
+          <div class="mt-8 border-t border-arena pt-6">
+            <h2 class="text-lg">Notas olfativas</h2>
+            <p class="mt-3 text-sm">{p.notas}</p>
+          </div>
+        )
+      )}
+
+      {p.descripcion && (
+        <div class="prosa mt-8 border-t border-arena pt-6">
+          <h2 class="text-lg">Descripción</h2>
+          <p class="mt-3 text-[15px]">{p.descripcion}</p>
+        </div>
+      )}
+
+      {p.similarA.length > 0 && (
+        <div class="mt-8 border-t border-arena pt-6">
+          <h2 class="text-lg">Similar a</h2>
+          <p class="mt-1 text-sm text-humo">Si te gusta alguno de estos, este te va a gustar.</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {p.similarA.map((s) => (
+              <a class="chip" href={`/catalogo/?q=${encodeURIComponent(s)}`}>{s}</a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!p.notas && !p.descripcion && p.similarA.length === 0 && (
+        <p class="mt-8 border-t border-arena pt-6 text-sm text-humo">
+          ¿Quieres saber cómo huele o a qué se parece? <a href={enlaceWhatsApp(mensajes.consulta(completo))} target="_blank" rel="noopener" class="text-oro-oscuro underline underline-offset-4 hover:text-negro">Pregúntanos por WhatsApp</a>.
+        </p>
+      )}
+    </div>
+  </section>
+
+  {rel.length > 0 && (
+    <section class="bg-marfil">
+      <div class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
+        <h2 class="text-2xl md:text-3xl">También te puede gustar</h2>
+        <p class="etiqueta mt-2 text-oro-oscuro">De {p.marca} y parecidos</p>
+        <div class="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+          {rel.map((r) => <TarjetaProducto producto={r} />)}
+        </div>
+      </div>
+    </section>
+  )}
+</Base>

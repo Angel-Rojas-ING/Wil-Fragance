@@ -1,0 +1,251 @@
+@import "tailwindcss";
+@import "@fontsource-variable/montserrat";
+
+/* ------------------------------------------------------------------
+   WIL Fragance · sistema visual
+   Tres colores del logo (negro, dorado #E6C643, blanco) y tonos
+   derivados: dorado oscuro para texto sobre blanco y grises cálidos.
+   ------------------------------------------------------------------ */
+@theme {
+  --font-sans: "Montserrat Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-negro: #000000;
+  --color-blanco: #ffffff;
+  --color-oro: #e6c643;
+  --color-oro-oscuro: #7e6911;
+  --color-marfil: #f9f8f0;
+  --color-hueso: #f3f1e7;
+  --color-arena: #e3e0d3;
+  --color-piedra: #a6a396;
+  --color-humo: #747063;
+  --color-carbon: #21201c;
+  --color-grafito: #2a2820;
+
+  --tracking-etiqueta: 0.3em;
+  --tracking-boton: 0.16em;
+  --tracking-titulo: -0.02em;
+
+  --ease-salida: cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow-flotante: 0 14px 30px -12px rgb(0 0 0 / 0.45);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scrollbar-color: var(--color-piedra) var(--color-marfil);
+  }
+  body {
+    background: var(--color-blanco);
+    color: var(--color-carbon);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--color-oro);
+    color: var(--color-negro);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-oro);
+    outline-offset: 3px;
+  }
+  h1, h2, h3, h4 {
+    font-weight: 700;
+    letter-spacing: var(--tracking-titulo);
+    line-height: 1.1;
+    color: var(--color-negro);
+    text-wrap: balance;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+  }
+  button, input, select {
+    font: inherit;
+    color: inherit;
+  }
+  input::placeholder {
+    color: var(--color-humo);
+  }
+  summary {
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  }
+}
+
+@layer components {
+  /* Etiqueta: Montserrat Regular, mayúsculas, mucho espaciado (como "FRAGANCE") */
+  .etiqueta {
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-etiqueta);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  /* Arco: la ventana de vitrina donde vive cada foto */
+  .arco {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--color-blanco);
+    border: 1px solid var(--color-arena);
+    border-radius: 999px 999px 0 0;
+    aspect-ratio: 1 / 1.18;
+  }
+  .arco > img {
+    width: 78%;
+    height: auto;
+    margin-bottom: 7%;
+    object-fit: contain;
+    transition: transform 0.6s var(--ease-salida);
+  }
+  .arco--limpio {
+    border-color: transparent;
+  }
+  @media (hover: hover) {
+    a:hover .arco > img,
+    a:focus-visible .arco > img {
+      transform: translateY(-2%) scale(1.03);
+    }
+  }
+
+  /* Columna del portal (banner de portada) */
+  .columna {
+    --hueco: 13px;
+    position: relative;
+    width: 44px;
+    height: 140px;
+    border: 2px solid var(--color-oro);
+    border-bottom: 0;
+    border-radius: 999px 999px 0 0;
+  }
+  .columna::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: var(--hueco);
+    bottom: 0;
+    width: 26%;
+    transform: translateX(-50%);
+    background: var(--color-oro);
+    border-radius: 999px 999px 0 0;
+  }
+
+  /* Insignia "Agotado" */
+  .insignia {
+    position: absolute;
+    z-index: 2;
+    top: 12px;
+    left: 12px;
+    background: var(--color-negro);
+    color: var(--color-oro);
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    padding: 7px 10px 6px;
+  }
+
+  /* Botones */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 48px;
+    padding: 0.9rem 1.4rem;
+    border: 1px solid transparent;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: var(--tracking-boton);
+    text-transform: uppercase;
+    line-height: 1;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.25s var(--ease-salida);
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn[disabled], .btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+  .btn svg { width: 18px; height: 18px; flex: none; }
+  .btn-negro { background: var(--color-negro); color: var(--color-blanco); border-color: var(--color-negro); }
+  .btn-negro:hover { color: var(--color-oro); }
+  .btn-oro { background: var(--color-oro); color: var(--color-negro); border-color: var(--color-oro); }
+  .btn-oro:hover { background: var(--color-negro); color: var(--color-oro); }
+  .btn-borde { background: transparent; color: var(--color-negro); border-color: var(--color-negro); }
+  .btn-borde:hover { background: var(--color-negro); color: var(--color-blanco); }
+  .btn-borde-oro { background: transparent; color: var(--color-oro); border-color: var(--color-oro); }
+  .btn-borde-oro:hover { background: var(--color-oro); color: var(--color-negro); }
+
+  /* Chips de filtro */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 40px;
+    padding: 0.5rem 0.95rem;
+    border: 1px solid var(--color-arena);
+    border-radius: 999px;
+    background: var(--color-blanco);
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .chip:hover { border-color: var(--color-negro); }
+  .chip[aria-pressed="true"] { background: var(--color-negro); color: var(--color-blanco); border-color: var(--color-negro); }
+
+  /* Campos */
+  .campo {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--color-arena);
+    background: var(--color-blanco);
+    border-radius: 0;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .campo:focus { border-color: var(--color-negro); outline: none; box-shadow: 0 0 0 2px var(--color-oro); }
+  select.campo {
+    padding-right: 2.4rem;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%2321201c' stroke-width='1.6'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+  }
+
+  /* Precio */
+  .precio { font-weight: 700; color: var(--color-negro); letter-spacing: -0.01em; }
+  .precio small { font-weight: 400; font-size: 0.62em; letter-spacing: 0.08em; margin-right: 0.15em; color: var(--color-humo); }
+
+  /* Separador con chevrón */
+  .separador { display: flex; align-items: center; gap: 1.1rem; }
+  .separador::before, .separador::after { content: ""; flex: 1; height: 1px; background: var(--color-arena); }
+  .separador--oscuro::before, .separador--oscuro::after { background: var(--color-grafito); }
+
+  /* Fila deslizable horizontal (chips en móvil) */
+  .fila-deslizable {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  .fila-deslizable::-webkit-scrollbar { display: none; }
+
+  .prosa p + p { margin-top: 1em; }
+  .prosa a { color: var(--color-oro-oscuro); text-decoration: underline; text-underline-offset: 3px; }
+}

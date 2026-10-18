@@ -1,0 +1,28 @@
+{
+  "name": "wil-fragance",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Catálogo web de WIL Fragance: perfumes de diseñador y árabes en República Dominicana, con pedido por WhatsApp.",
+  "scripts": {
+    "dev": "node scripts/catalogo.mjs && node scripts/preparar-fotos.mjs && astro dev",
+    "build": "node scripts/catalogo.mjs && node scripts/preparar-fotos.mjs && astro build",
+    "preview": "astro preview",
+    "catalogo": "node scripts/catalogo.mjs",
+    "fotos": "node scripts/preparar-fotos.mjs",
+    "validar": "node scripts/validar.mjs productos.csv",
+    "astro": "astro"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/montserrat": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.4.0",
+    "papaparse": "^5.7.0",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.3"
+  }
+}

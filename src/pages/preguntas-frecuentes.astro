@@ -1,0 +1,75 @@
+---
+import Base from '../layouts/Base.astro';
+import Icono from '../components/Icono.astro';
+import { tienda, enlaceWhatsApp, mensajes } from '../datos/tienda';
+
+const preguntas = [
+  {
+    p: '¿Cómo hago un pedido?',
+    r: `Elige los perfumes en el catálogo y pulsa "Añadir". En el carrito escribe tu nombre y pulsa "Pedir por WhatsApp": se abre WhatsApp con tu pedido ya escrito (productos, cantidades, precios y total). Nosotros confirmamos y coordinamos la entrega.`,
+  },
+  {
+    p: '¿Cómo pago?',
+    r: `Aceptamos ${tienda.pagos.join(' y ').toLowerCase()}. Los detalles del pago se acuerdan por WhatsApp al confirmar el pedido. [Revisar: ¿se paga antes o contra entrega?]`,
+  },
+  {
+    p: '¿Hacen entregas? ¿Dónde?',
+    r: `Entregamos en ${tienda.ubicacion}. [Revisar: zonas, costo de envío, tiempo de entrega y si hay envíos al resto del país.]`,
+  },
+  {
+    p: '¿Los perfumes son originales?',
+    r: '[Pendiente de confirmar por Wil: describe aquí la garantía de autenticidad de los perfumes de diseñador y el origen de los perfumes árabes.]',
+  },
+  {
+    p: '¿Qué es un perfume árabe y qué significa "Similar a"?',
+    r: 'Son perfumes de casas de Emiratos Árabes Unidos como Lattafa, Armaf, Afnan o Rasasi, conocidos por su duración y su precio. Muchos están inspirados en fragancias de diseñador; en cada ficha, "Similar a" indica a cuál recuerda, y el buscador también lo encuentra por ese nombre.',
+  },
+  {
+    p: 'Un perfume aparece como "Agotado". ¿Qué hago?',
+    r: 'Pulsa "Avísame cuando llegue" en su ficha: se abre WhatsApp con el nombre del perfume y te escribimos en cuanto vuelva a estar disponible.',
+  },
+  {
+    p: '¿Puedo cambiar o devolver un perfume?',
+    r: '[Pendiente: política de cambios y devoluciones.]',
+  },
+  {
+    p: '¿Tienen tienda física?',
+    r: `[Pendiente: dirección y horario si hay tienda física, o aclarar que la venta es por WhatsApp con entrega.] Horario de atención: ${tienda.horario}.`,
+  },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: preguntas
+    .filter((q) => !q.r.includes('[Pendiente'))
+    .map((q) => ({ '@type': 'Question', name: q.p, acceptedAnswer: { '@type': 'Answer', text: q.r.replace(/\s*\[[^\]]*\]/g, '') } })),
+};
+---
+
+<Base titulo="Preguntas frecuentes" descripcion={`Cómo pedir, pagar y recibir tus perfumes en ${tienda.nombre}. Pedido por WhatsApp, entrega en ${tienda.ubicacion}.`} jsonLd={jsonLd}>
+  <section class="mx-auto max-w-3xl px-4 py-10 md:px-6 md:py-16">
+    <h1 class="text-3xl md:text-4xl">Preguntas frecuentes</h1>
+    <p class="etiqueta mt-2 text-oro-oscuro">Pedidos, pagos y entregas</p>
+
+    <div class="mt-8 divide-y divide-arena border-y border-arena">
+      {preguntas.map((q) => (
+        <details class="group py-1">
+          <summary class="flex items-center justify-between gap-4 py-4 text-left text-[15px] font-semibold text-negro md:text-base">
+            {q.p}
+            <span class="grid h-8 w-8 flex-none place-items-center text-humo transition-transform duration-300 ease-salida group-open:rotate-45" aria-hidden="true">
+              <Icono nombre="mas" tamano={18} />
+            </span>
+          </summary>
+          <p class="pb-5 text-[15px] text-carbon" class:list={{ 'text-humo': q.r.includes('[') }}>{q.r}</p>
+        </details>
+      ))}
+    </div>
+
+    <div class="mt-10 border border-arena bg-marfil p-6">
+      <h2 class="text-lg">¿Otra duda?</h2>
+      <p class="mt-1 text-sm text-humo">Escríbenos y te respondemos en el horario de atención: {tienda.horario}.</p>
+      <a href={enlaceWhatsApp(mensajes.general)} target="_blank" rel="noopener" class="btn btn-negro mt-5"><Icono nombre="whatsapp" /> Escríbenos por WhatsApp</a>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,15 @@
+---
+import Icono from './Icono.astro';
+import { enlaceWhatsApp, mensajes } from '../datos/tienda';
+---
+
+<a
+  href={enlaceWhatsApp(mensajes.general)}
+  target="_blank"
+  rel="noopener"
+  class="fixed right-4 bottom-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-oro text-negro shadow-flotante transition-transform duration-300 ease-salida hover:-translate-y-0.5 focus-visible:-translate-y-0.5 md:right-6 md:bottom-6"
+  aria-label="Escríbenos por WhatsApp"
+  title="Escríbenos por WhatsApp"
+>
+  <Icono nombre="whatsapp" tamano={28} />
+</a>

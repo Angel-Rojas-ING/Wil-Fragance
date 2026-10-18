@@ -1,0 +1,97 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFab from '../components/WhatsAppFab.astro';
+import { tienda } from '../datos/tienda';
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+  /** Imagen para compartir (ruta del sitio o URL absoluta). */
+  imagen?: string;
+  tipoOG?: 'website' | 'product';
+  noindex?: boolean;
+  jsonLd?: object | object[];
+  /** Si es true, el título se usa tal cual, sin "| WIL Fragance". */
+  tituloCompleto?: boolean;
+}
+
+const {
+  titulo,
+  descripcion,
+  imagen = '/img/og-default.jpg',
+  tipoOG = 'website',
+  noindex = false,
+  jsonLd,
+  tituloCompleto = false,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://wil-fragance.pages.dev');
+const canonical = new URL(Astro.url.pathname, site).href;
+const imagenAbs = new URL(imagen, site).href;
+const tituloPagina = tituloCompleto ? titulo : `${titulo} | ${tienda.nombre}`;
+const bloquesLd = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+
+<!doctype html>
+<html lang="es-DO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{tituloPagina}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content={tipoOG} />
+    <meta property="og:site_name" content={tienda.nombre} />
+    <meta property="og:locale" content="es_DO" />
+    <meta property="og:title" content={tituloPagina} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={imagenAbs} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={tituloPagina} />
+    <meta name="twitter:description" content={descripcion} />
+    <meta name="twitter:image" content={imagenAbs} />
+    <slot name="head" />
+    {bloquesLd.map((bloque) => <script is:inline type="application/ld+json" set:html={JSON.stringify(bloque)}></script>)}
+    <ClientRouter />
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-oro focus:px-4 focus:py-2 focus:text-negro"
+    >
+      Saltar al contenido
+    </a>
+    <Header />
+    <main id="contenido" class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+    <WhatsAppFab />
+    <div
+      id="aviso"
+      role="status"
+      aria-live="polite"
+      data-visible="false"
+      class="pointer-events-none fixed inset-x-4 bottom-24 z-50 flex justify-center transition-all duration-300 ease-salida data-[visible=false]:translate-y-3 data-[visible=false]:opacity-0 md:bottom-8"
+    >
+      <div class="pointer-events-auto flex max-w-md items-center gap-4 border border-oro bg-negro px-4 py-3 text-sm text-blanco shadow-flotante">
+        <span data-aviso-texto></span>
+        <a href="/carrito/" class="etiqueta whitespace-nowrap text-oro hover:text-blanco">Ver carrito</a>
+      </div>
+    </div>
+    <script src="../scripts/carrito.ts"></script>
+  </body>
+</html>

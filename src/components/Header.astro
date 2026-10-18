@@ -1,0 +1,109 @@
+---
+import Icono from './Icono.astro';
+import { enlaceWhatsApp, mensajes } from '../datos/tienda';
+
+const enlaces = [
+  { href: '/catalogo/', texto: 'Catálogo' },
+  { href: '/catalogo/?genero=hombre', texto: 'Hombre' },
+  { href: '/catalogo/?genero=mujer', texto: 'Mujer' },
+  { href: '/catalogo/?tipo=arabe', texto: 'Árabes' },
+  { href: '/catalogo/?tipo=disenador', texto: 'Diseñador' },
+];
+const secundarios = [
+  { href: '/sobre-nosotros/', texto: 'Sobre nosotros' },
+  { href: '/preguntas-frecuentes/', texto: 'Preguntas frecuentes' },
+  { href: '/contacto/', texto: 'Contacto' },
+];
+const ruta = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-30 border-b border-grafito bg-negro text-blanco" transition:name="cabecera" transition:animate="none">
+  <div class="mx-auto flex h-[60px] max-w-7xl items-center justify-between gap-4 px-4 md:px-6">
+    <a href="/" class="flex items-center gap-3" aria-label="WIL Fragance, inicio">
+      <img src="/logo/isotipo-blanco.svg" width="36" height="37" alt="" decoding="async" />
+      <span class="leading-none">
+        <span class="block text-[17px] font-bold tracking-[0.14em] text-blanco">WIL</span>
+        <span class="mt-[3px] block text-[8px] tracking-[0.42em] text-blanco">FRAGANCE</span>
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-7 lg:flex" aria-label="Principal">
+      {enlaces.map((e) => (
+        <a
+          href={e.href}
+          class="etiqueta text-blanco/90 transition-colors hover:text-oro"
+          aria-current={ruta === e.href ? 'page' : undefined}
+        >
+          {e.texto}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-1">
+      <a href="/catalogo/#buscar" class="grid h-11 w-11 place-items-center text-blanco transition-colors hover:text-oro" aria-label="Buscar perfumes">
+        <Icono nombre="buscar" />
+      </a>
+      <a href="/carrito/" class="relative grid h-11 w-11 place-items-center text-blanco transition-colors hover:text-oro" aria-label="Carrito">
+        <Icono nombre="bolsa" />
+        <span
+          data-carrito-cantidad
+          hidden
+          class="absolute top-1 right-0.5 min-w-[18px] rounded-full bg-oro px-1 text-center text-[10px] font-bold leading-[18px] text-negro"
+          aria-live="polite"
+        >0</span>
+      </a>
+      <button
+        type="button"
+        class="grid h-11 w-11 place-items-center text-blanco transition-colors hover:text-oro lg:hidden"
+        aria-label="Abrir el menú"
+        data-abrir-menu
+      >
+        <Icono nombre="menu" />
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog id="menu" class="m-0 h-dvh max-h-none w-full max-w-none bg-negro p-0 text-blanco backdrop:bg-negro/70 lg:hidden" aria-label="Menú">
+  <div class="flex h-full flex-col px-6 pb-8">
+    <div class="flex h-[60px] items-center justify-between">
+      <span class="etiqueta text-oro">Menú</span>
+      <button type="button" class="grid h-11 w-11 place-items-center text-blanco" aria-label="Cerrar el menú" data-cerrar-menu>
+        <Icono nombre="cerrar" />
+      </button>
+    </div>
+    <nav class="mt-6 flex flex-col" aria-label="Menú móvil">
+      {enlaces.map((e) => (
+        <a href={e.href} class="border-b border-grafito py-4 text-2xl font-bold tracking-tight text-blanco hover:text-oro">
+          {e.texto}
+        </a>
+      ))}
+      <div class="mt-6 flex flex-col gap-3">
+        {secundarios.map((e) => (
+          <a href={e.href} class="etiqueta text-blanco/85 hover:text-oro">{e.texto}</a>
+        ))}
+      </div>
+    </nav>
+    <a href={enlaceWhatsApp(mensajes.general)} target="_blank" rel="noopener" class="btn btn-oro mt-auto w-full">
+      <Icono nombre="whatsapp" />
+      Escríbenos por WhatsApp
+    </a>
+  </div>
+</dialog>
+
+<script>
+  function iniciarMenu() {
+    const menu = document.getElementById('menu') as HTMLDialogElement | null;
+    if (!menu || menu.dataset.listo) return;
+    menu.dataset.listo = 'true';
+    document.querySelector('[data-abrir-menu]')?.addEventListener('click', () => menu.showModal());
+    menu.querySelector('[data-cerrar-menu]')?.addEventListener('click', () => menu.close());
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) menu.close();
+    });
+  }
+  document.addEventListener('astro:page-load', iniciarMenu);
+  document.addEventListener('astro:before-swap', () => {
+    (document.getElementById('menu') as HTMLDialogElement | null)?.close();
+  });
+</script>

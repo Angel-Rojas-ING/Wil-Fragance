@@ -1,0 +1,203 @@
+---
+import Base from '../layouts/Base.astro';
+import TarjetaProducto from '../components/TarjetaProducto.astro';
+import Chevron from '../components/Chevron.astro';
+import Icono from '../components/Icono.astro';
+import { tienda, enlaceWhatsApp, mensajes, instagramUrl } from '../datos/tienda';
+import { destacados, productos, marcas, porSlug, rutaImagen, srcsetImagen, rutaPerfume, nombreCompleto, type Producto } from '../lib/catalogo';
+import { precio } from '../lib/formato';
+
+const dest = destacados(9);
+const estrella = dest[0] ?? productos[0];
+const destacadosGrid = dest.filter((p) => p.slug !== estrella.slug).slice(0, 8);
+
+const marcadasNovedad = productos.filter((p) => p.novedad);
+const numericos = productos.every((p) => /^\d+$/.test(p.id));
+const recientes = numericos ? [...productos].sort((a, b) => Number(b.id) - Number(a.id)) : [...productos].reverse();
+const novedadesGrid = (marcadasNovedad.length ? marcadasNovedad : recientes.filter((p) => !dest.some((d) => d.slug === p.slug))).slice(0, 8);
+
+const elegir = (slug: string, alternativa: (p: Producto) => boolean) => porSlug.get(slug) ?? productos.find(alternativa) ?? estrella;
+const categorias = [
+  { href: '/catalogo/?genero=hombre', titulo: 'Hombre', producto: elegir('chanel-bleu-de-chanel-parfum', (p) => p.genero === 'hombre') },
+  { href: '/catalogo/?genero=mujer', titulo: 'Mujer', producto: elegir('carolina-herrera-good-girl-edp', (p) => p.genero === 'mujer') },
+  { href: '/catalogo/?tipo=arabe', titulo: 'Árabes', producto: elegir('lattafa-asad-edp', (p) => p.tipo === 'árabe') },
+  { href: '/catalogo/?tipo=disenador', titulo: 'Diseñador', producto: elegir('yves-saint-laurent-y-edp', (p) => p.tipo === 'diseñador') },
+];
+
+const pasos = [
+  { titulo: 'Elige', texto: 'Explora el catálogo por género, tipo, marca o precio, o busca por nombre.' },
+  { titulo: 'Añade al carrito', texto: 'Se guarda en tu teléfono; puedes seguir mirando y volver cuando quieras.' },
+  { titulo: 'Pide por WhatsApp', texto: 'Un botón abre WhatsApp con tu pedido ya escrito. Confirmamos entrega y pago contigo.' },
+];
+
+const site = Astro.site ?? new URL('https://wil-fragance.pages.dev');
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Store',
+  name: tienda.nombre,
+  description: tienda.descripcion,
+  url: site.href,
+  logo: new URL('/logo/logo-wil-800.png', site).href,
+  image: new URL('/img/og-default.jpg', site).href,
+  sameAs: [instagramUrl],
+  paymentAccepted: tienda.pagos.join(', '),
+  priceRange: 'RD$2,750 - RD$14,000',
+  address: { '@type': 'PostalAddress', addressCountry: 'DO', addressLocality: tienda.ubicacion },
+};
+---
+
+<Base
+  titulo="Perfumes de diseñador y árabes en República Dominicana"
+  descripcion={`${tienda.nombre}: ${productos.length} perfumes de diseñador y árabes con precios en pesos. Elige, arma tu carrito y pide por WhatsApp. Entrega en ${tienda.ubicacion}.`}
+  tituloCompleto={false}
+  jsonLd={jsonLd}
+>
+  <!-- Banner: la fachada con el portal -->
+  <section class="bg-negro text-blanco">
+    <div class="mx-auto grid max-w-7xl gap-8 px-4 pt-7 pb-12 md:grid-cols-2 md:items-center md:gap-12 md:px-6 md:pt-14 md:pb-20">
+      <div class="order-2 md:order-1">
+        <h1 class="text-[34px] leading-[1.04] text-blanco sm:text-4xl lg:text-[56px]">{tienda.lema}</h1>
+        <p class="etiqueta mt-4 text-oro">Entrega en {tienda.ubicacion} · Pedido por WhatsApp</p>
+        <p class="mt-5 max-w-md text-[15px] text-blanco/75 md:text-base">
+          Fragancias de las grandes casas y las árabes más buscadas, con precios claros en pesos. Elige, añade al carrito y confirma tu pedido por WhatsApp.
+        </p>
+        <div class="mt-7 flex flex-wrap items-center gap-x-6 gap-y-4">
+          <a href="/catalogo/" class="btn btn-oro">Ver catálogo <Icono nombre="flecha" tamano={16} /></a>
+          <a href={enlaceWhatsApp(mensajes.general)} target="_blank" rel="noopener" class="etiqueta border-b border-oro pb-1 text-oro transition-colors hover:text-blanco">
+            Pedir por WhatsApp
+          </a>
+        </div>
+        <p class="mt-8 text-sm text-blanco/50">{productos.length} perfumes · {marcas.length} marcas</p>
+      </div>
+      <div class="order-1 md:order-2">
+        <div class="mx-auto grid max-w-sm grid-cols-[auto_1fr_auto] items-end gap-3 md:max-w-md md:gap-5">
+          <span class="columna h-[60%] md:w-14 md:[--hueco:18px]" aria-hidden="true"></span>
+          <a href={rutaPerfume(estrella)} class="block" aria-label={`Ver ${nombreCompleto(estrella)}`}>
+            <div class="arco arco--limpio">
+              <img
+                src={rutaImagen(estrella.imagen, 800)}
+                srcset={srcsetImagen(estrella.imagen)}
+                sizes="(min-width: 768px) 40vw, 80vw"
+                width="800"
+                height="800"
+                alt={nombreCompleto(estrella)}
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+                transition:name={`foto-${estrella.slug}`}
+              />
+            </div>
+          </a>
+          <span class="columna h-[60%] md:w-14 md:[--hueco:18px]" aria-hidden="true"></span>
+        </div>
+        <p class="mt-5 text-center text-sm text-blanco/80">
+          <a href={rutaPerfume(estrella)} class="hover:text-oro">
+            <span class="font-semibold text-blanco">{estrella.nombre}</span>
+            <span class="etiqueta ml-2 text-[10px] text-oro">{estrella.marca}</span>
+          </a>
+          <span class="mx-2 text-blanco/40">·</span>{precio(estrella.precio)}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categorías: cuatro vitrinas -->
+  <section class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
+    <h2 class="text-2xl md:text-3xl">Explora</h2>
+    <p class="etiqueta mt-2 text-oro-oscuro">Cuatro vitrinas</p>
+    <div class="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+      {categorias.map((c) => (
+        <a href={c.href} class="group block text-center">
+          <div class="arco">
+            <img
+              src={rutaImagen(c.producto.imagen, 400)}
+              srcset={srcsetImagen(c.producto.imagen)}
+              sizes="(min-width: 768px) 22vw, 45vw"
+              width="400"
+              height="400"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <span class="etiqueta mt-3 block text-negro transition-colors group-hover:text-oro-oscuro">{c.titulo}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Destacados -->
+  <section class="bg-marfil">
+    <div class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <h2 class="text-2xl md:text-3xl">Destacados</h2>
+          <p class="etiqueta mt-2 text-oro-oscuro">Los más pedidos</p>
+        </div>
+        <a href="/catalogo/" class="etiqueta hidden text-negro transition-colors hover:text-oro-oscuro sm:block">Ver todo el catálogo</a>
+      </div>
+      <div class="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+        {destacadosGrid.map((p) => <TarjetaProducto producto={p} />)}
+      </div>
+      <a href="/catalogo/" class="btn btn-borde mt-8 w-full sm:hidden">Ver todo el catálogo</a>
+    </div>
+  </section>
+
+  <!-- Cómo pedir -->
+  <section class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
+    <h2 class="text-2xl md:text-3xl">Así de fácil</h2>
+    <p class="etiqueta mt-2 text-oro-oscuro">Tres pasos</p>
+    <ol class="mt-8 grid gap-6 md:grid-cols-3 md:gap-8">
+      {pasos.map((paso, i) => (
+        <li class="border-t border-oro pt-5">
+          <p class="etiqueta text-oro-oscuro">Paso {i + 1}</p>
+          <h3 class="mt-2 text-lg">{paso.titulo}</h3>
+          <p class="mt-2 text-sm text-humo">{paso.texto}</p>
+        </li>
+      ))}
+    </ol>
+    <ul class="mt-10 grid gap-3 border border-arena bg-marfil p-5 text-sm sm:grid-cols-3 md:p-6">
+      <li class="flex items-center gap-3"><Chevron ancho={18} /> Pedido y confirmación por WhatsApp</li>
+      <li class="flex items-center gap-3"><Chevron ancho={18} /> Entrega en {tienda.ubicacion}</li>
+      <li class="flex items-center gap-3"><Chevron ancho={18} /> Pago por {tienda.pagos.join(' o ').toLowerCase()}</li>
+    </ul>
+  </section>
+
+  <!-- Novedades -->
+  <section class="bg-marfil">
+    <div class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
+      <h2 class="text-2xl md:text-3xl">Novedades</h2>
+      <p class="etiqueta mt-2 text-oro-oscuro">Recién llegados</p>
+      <div class="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+        {novedadesGrid.map((p) => <TarjetaProducto producto={p} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Marcas -->
+  <section class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
+    <h2 class="text-2xl md:text-3xl">Marcas</h2>
+    <p class="etiqueta mt-2 text-oro-oscuro">{marcas.length} casas</p>
+    <div class="mt-6 flex flex-wrap gap-2">
+      {marcas.map((m) => (
+        <a href={`/catalogo/?marca=${encodeURIComponent(m.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase())}`} class="chip">{m}</a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Cierre -->
+  <section class="bg-negro text-blanco">
+    <div class="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+      <div class="separador separador--oscuro"><Chevron ancho={30} /></div>
+      <div class="mt-10 grid gap-8 md:grid-cols-[1fr_auto] md:items-center">
+        <div>
+          <h2 class="text-2xl text-blanco md:text-3xl">¿Buscas un perfume que no ves aquí?</h2>
+          <p class="mt-3 max-w-lg text-blanco/70">Escríbenos y te decimos si lo conseguimos. También te ayudamos a elegir si vas a regalar.</p>
+        </div>
+        <a href={enlaceWhatsApp(mensajes.general)} target="_blank" rel="noopener" class="btn btn-oro">
+          <Icono nombre="whatsapp" /> Escríbenos por WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
