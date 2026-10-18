@@ -3,7 +3,7 @@
  * así que funciona con el dedo sin JavaScript; aquí se añaden autoavance, flechas,
  * puntos y la leyenda (nombre, marca y precio) de la diapositiva activa.
  */
-const INTERVALO = 5000;
+const INTERVALO = 4500;
 const temporizadores = new Set<number>();
 
 function iniciarCarrusel(raiz: HTMLElement) {
@@ -48,8 +48,9 @@ function iniciarCarrusel(raiz: HTMLElement) {
     }
   }
 
+  // Siempre avanza solo; con "reducir movimiento" el cambio es instantáneo en vez de deslizado.
   function arrancar() {
-    if (reducirMovimiento || document.hidden) return;
+    if (document.hidden) return;
     parar();
     temporizador = window.setInterval(() => ir(indice + 1), INTERVALO);
     temporizadores.add(temporizador);
@@ -76,12 +77,14 @@ function iniciarCarrusel(raiz: HTMLElement) {
   raiz.querySelector('[data-siguiente]')?.addEventListener('click', () => { ir(indice + 1); arrancar(); });
   puntos.forEach((p, i) => p.addEventListener('click', () => { ir(i); arrancar(); }));
 
-  raiz.addEventListener('pointerenter', parar);
-  raiz.addEventListener('pointerleave', arrancar);
-  raiz.addEventListener('focusin', parar);
-  raiz.addEventListener('focusout', arrancar);
+  // Solo se detiene mientras el visitante lo está tocando o navegando con el teclado, y cuando la pestaña no se ve.
+  pista.addEventListener('pointerdown', parar);
+  pista.addEventListener('pointerup', arrancar);
+  pista.addEventListener('pointercancel', arrancar);
   pista.addEventListener('touchstart', parar, { passive: true });
   pista.addEventListener('touchend', arrancar, { passive: true });
+  raiz.addEventListener('focusin', parar);
+  raiz.addEventListener('focusout', arrancar);
   document.addEventListener('visibilitychange', () => (document.hidden ? parar() : arrancar()));
 
   pintar();
